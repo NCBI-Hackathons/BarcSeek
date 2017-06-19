@@ -3,3 +3,7 @@
 
 #ignore 
 ./.ipynb_checkpoints
+
+# Python byte-code stuff
+__pycache__/
+*.py[cod]
