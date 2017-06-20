@@ -30,6 +30,14 @@ optional arguments:
 ## Project Architecture
 ![alt text](https://i.imgur.com/EPEYBDq.png)
 
+Test Case Approach: Generated two test FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
+- Sample barcodes: 6 nucleotides
+- Degenerate sequences: 8 nucleotides
+- Sequence of interest was 50 nucleotides. 
+In essence the sequence information is the same, but the barcode and UMI information has been transposed. The schematic below provides additional information on how the test sequences were designed.
+![alt text](https://i.imgur.com/jz77TaE.png)
+The quality scores are all sampled from phred33 scale, so its likely that some barcodes nucleotides may be low enough to count as an error or, at least, uncertain. We automated generation of these test fastqs. The code for generation of these test fastq files is linked [here](/test.cases/test.case.generator.R)
+
 ## Sample Input Files
 - FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
 - Barcode.csv: [link](barcodes_csv.txt)
