@@ -45,3 +45,4 @@ optional arguments:
 ## Future Directions
 - Statistics and Quality Control. Investigate and report reads per sample and average data quality.
 - Uniform exception handling
+- Managing whitespace considerations in CLI file
