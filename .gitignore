@@ -21,3 +21,6 @@ data/
 
 # ignore stuff from VS Code
 .vscode/
+
+# ignore .DS_Store
+.DS_Store
