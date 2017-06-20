@@ -1,0 +1,5 @@
+Barcode1	Barcode2	Sample_name
+1		5		first_sample
+2		second_sample
+8		third_sample
+18		fourth_sample
