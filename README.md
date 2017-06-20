@@ -28,6 +28,7 @@ optional arguments:
 ```
 
 ## Project Architecture
+Pipeline Overview:
 ![alt text](https://i.imgur.com/EPEYBDq.png)
 
 Test Case Approach: Generated two test FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
