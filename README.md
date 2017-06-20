@@ -30,6 +30,11 @@ optional arguments:
 ## Project Architecture
 ![alt text](https://i.imgur.com/JZrY1Yi.png) 
 
+## Sample Input Files
+- FASTQ File
+- Barcode.csv
+- sample_sheet.tab
+
 ## Software Dependencies
 - DASK (http://dask.pydata.org/en/latest/)
 
