@@ -28,7 +28,7 @@ optional arguments:
 ```
 
 ## Project Architecture
-![alt text](https://imgur.com/9548833b-522d-4e7e-bdda-ecdc8b1f8cdd)
+![alt text](https://i.imgur.com/EPEYBDq.png)
 
 ## Sample Input Files
 - FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
