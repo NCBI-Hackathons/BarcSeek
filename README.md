@@ -45,4 +45,4 @@ optional arguments:
 ## Future Directions
 - Statistics and Quality Control. Investigate and report reads per sample and average data quality.
 - Uniform exception handling
-- Managing whitespace considerations in CLI file
+- Managing whitespace considerations in CLI file & making code compatible with Python style guide [link](https://i.imgur.com/EPEYBDq.png)
