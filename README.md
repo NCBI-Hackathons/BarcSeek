@@ -36,12 +36,12 @@ optional arguments:
 - sample_sheet.tab: [link](Sample_sheet.txt)
 
 ## Software Dependencies
-- DASK (http://dask.pydata.org/en/latest/)
+- DASK: [link](http://dask.pydata.org/en/latest/)
 
 ## Resources
-- Introduction to Sequencing: https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf
-- Markdown Language / Cheat Sheet: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+- Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
+- Markdown Language / Cheat Sheet: [link](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 
 ## Future Directions
-[] Statistics and Quality Control. Investigate and report reads per sample and average data quality.
-[] 
+- Statistics and Quality Control. Investigate and report reads per sample and average data quality.
+- Uniform exception handling
