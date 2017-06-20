@@ -8,7 +8,9 @@ if sys.version_info.major is not 3 and sys.version_info.minor < 5:
 
 
 import itertools
+from copy import deepcopy
 from typing import Optional, Union, Tuple, List
+
 from read import Read
 
 try:
@@ -61,14 +63,14 @@ def barcode_to_regex(barcode: str, error_rate: Optional[int]=None):
     return find_barcode
 
 
-def match_barcode(read: Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None):
+def match_barcode(read: Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None) -> Optional[Read]:
     """Match a read to a specific pair of barcodes
     'read' is an object of class Read
     'barcodes' is either a tuple or list of one or two barcode sequences
     'error_rate' is the error rate"""
     barcodes = filter(None, barcodes) # type: filter
     regexes = tuple(map(lambda tup: barcode_to_regex(*tup), zip(barcodes, itertools.repeat(error_rate)))) # type: Tuple
-    matches = list()
+    matches = list() # type: List
     if len(regexes) == 1:
         matches.append(regexes[0].search(read.forward))
     elif len(regexes) == 2:
@@ -78,13 +80,16 @@ def match_barcode(read: Read, barcodes: Union[Tuple[str], List[str]], error_rate
         raise ValueError("There only be one or two barcodes")
     if not matches:
         return None
-    for index, reg in enumerate(regexes):
+    trimmed = deepcopy(read)
+    for index, reg in enumerate(regexes): # type: int, _regex.Pattern
+        print("trimming match #", index)
         if index % 2 != 0:
-            reverse = True
+            reverse = True # type: bool
         else:
-            reverse = False
+            reverse = False # type: int
         for i in range(reg.groups): # type: int
-            if i % 2 == 0:
+            if i % 2 != 0:
                 continue
-            start, end = matches[index].span(i + 1)
-            
+            start, end = matches[index].span(i + 1) # type: int, int
+            trimmed.trim(start=start, end=end, reverse=reverse)
+    return trimmed

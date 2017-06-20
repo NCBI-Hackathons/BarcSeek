@@ -85,7 +85,7 @@ class Read(object):
         self._rqual = qual
         self._validate()
 
-    def trim(self, start: int, end: Optional[int]=None, reverse: bool=False):
+    def trim(self, start: int, end: Optional[int]=None, reverse: bool=False) -> None:
         """Trim some sequence"""
         if end and start > end:
             raise ValueError("'start' cannot be greater than 'end'")
