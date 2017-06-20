@@ -8,7 +8,8 @@ if sys.version_info.major is not 3 and sys.version_info.minor < 5:
 
 
 import itertools
-from typing import Optional
+from typing import Optional, Union, Tuple, List
+from read import Read
 
 try:
     import regex
@@ -16,22 +17,23 @@ except ImportError as error:
     sys.exit("Please install " + error.name)
 
 
+IUPAC_CODES = {
+    'R': 'AG',
+    'Y': 'CT',
+    'S': 'GC',
+    'W': 'AT',
+    'K': 'GT',
+    'M': 'AC',
+    'B': 'CGT',
+    'D': 'AGT',
+    'H': 'ACT',
+    'V': 'ACG'
+}
+
 def fix_iupac(barcode: str) -> str:
     """Remove IUPAC codes from the barcode sequence, 'N's will remain"""
-    iupac = {
-        'R': 'AG',
-        'Y': 'CT',
-        'S': 'GC',
-        'W': 'AT',
-        'K': 'GT',
-        'M': 'AC',
-        'B': 'CGT',
-        'D': 'AGT',
-        'H': 'ACT',
-        'V': 'ACG'
-    }
     new_barcode = barcode
-    for code, sub in iupac.items(): # type: str, str
+    for code, sub in IUPAC_CODES.items(): # type: str, str
         new_barcode = new_barcode.replace(code, '[%s]' % sub) # type: str
     return new_barcode
 
@@ -45,16 +47,44 @@ def barcode_to_regex(barcode: str, error_rate: Optional[int]=None):
     for index, subpattern in enumerate(filtered_barcode): # type: int, str
         barcode_pattern = '(' + subpattern + ')' # type: str
         if error_rate:
-            min_err = max(len(subpattern) - error_rate, 0) # type: int
-            barcode_pattern += '{' + str(min_err) + '<=e<=' + str(len(subpattern) + error_rate) + '}'
+            barcode_pattern += '{e<=' + str(error_rate) + '}'
         pattern += barcode_pattern
         try:
             umi_pattern = '(' + ''.join(itertools.repeat('[ACGT]', umi_lengths[index])) + ')' # type: str
         except IndexError:
             break
-        if error_rate:
-            min_err = max(umi_lengths[index] - error_rate, 0) # type: int
-            umi_pattern += '{' + str(min_err) + '<=e<=' + str(umi_lengths[index] + error_rate) + '}'
-        pattern += umi_pattern
-    find_barcode = regex.compile(r'%s' % pattern)
+        else:
+            if error_rate:
+                umi_pattern += '{e<=' + str(error_rate) + '}'
+            pattern += umi_pattern
+    find_barcode = regex.compile(r'%s' % pattern, regex.ENHANCEMATCH)
     return find_barcode
+
+
+def match_barcode(read: Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None):
+    """Match a read to a specific pair of barcodes
+    'read' is an object of class Read
+    'barcodes' is either a tuple or list of one or two barcode sequences
+    'error_rate' is the error rate"""
+    barcodes = filter(None, barcodes) # type: filter
+    regexes = tuple(map(lambda tup: barcode_to_regex(*tup), zip(barcodes, itertools.repeat(error_rate)))) # type: Tuple
+    matches = list()
+    if len(regexes) == 1:
+        matches.append(regexes[0].search(read.forward))
+    elif len(regexes) == 2:
+        matches.append(regexes[0].search(read.forward))
+        matches.append(regexes[1].search(read.reverse))
+    else:
+        raise ValueError("There only be one or two barcodes")
+    if not matches:
+        return None
+    for index, reg in enumerate(regexes):
+        if index % 2 != 0:
+            reverse = True
+        else:
+            reverse = False
+        for i in range(reg.groups): # type: int
+            if i % 2 == 0:
+                continue
+            start, end = matches[index].span(i + 1)
+            
