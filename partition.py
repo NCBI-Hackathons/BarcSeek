@@ -11,7 +11,7 @@ import itertools
 from copy import deepcopy
 from typing import Optional, Union, Tuple, List
 
-from read import Read
+import fastq
 
 try:
     import regex
@@ -63,7 +63,7 @@ def barcode_to_regex(barcode: str, error_rate: Optional[int]=None):
     return find_barcode
 
 
-def match_barcode(read: Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None) -> Optional[Read]:
+def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None) -> Optional[fastq.Read]:
     """Match a read to a specific pair of barcodes
     'read' is an object of class Read
     'barcodes' is either a tuple or list of one or two barcode sequences
