@@ -1,34 +1,52 @@
+#!/usr/bin/env python3
 
-from dask import delayed
+import string
+import glob
+import dask
+import sys
+from dask import multiprocessing, delayed
+import logging
+import json
 
-
-@delayed
-def load(filename):
-    print("loading file: %s", filename)
-
-
-@delayed
-def clean(data):
-    pass
-
-
-@delayed
-def analyze(sequence_of_data):
-    pass
+logging.basicConfig(filename='parallel.log', filemode="w", level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+dask.set_options(get=dask.multiprocessing.get)
 
 
-@delayed
-def store(result):
-    with open('out.txt', 'w') as f:
-        f.write(result)
+@dask.delayed
+def partition(filename:string):
+    logging.debug("loading file: %s", filename)
+    i = 0
+    with open(filename, 'r') as f:
+        for line in f:
+            i = i + 1
+    f.close()
+    logging.debug("number of lines in file: %i", i)
 
 
-def __main__(args):
-    fastq_file = "foo.fastq".
-    #files = ['myfile.a.data', 'myfile.b.data', 'myfile.c.data']
-    #loaded = [load(i) for i in files]
-    #cleaned = [clean(i) for i in loaded]
-    #analyzed = analyze(cleaned)
-    #stored = store(analyzed)
 
-    #stored.compute()
+@dask.delayed
+def store(results, fn):
+    logging.debug("writing results to file: %s", fn)
+    #with open(fn, 'a') as f:
+    #    json.dump(results, f)
+
+
+def main():
+    try:
+        results = []
+        filenames = [i for i in glob.glob("data/*.fastq")]
+        assert len(filenames) > 0
+        for f in filenames:
+            d = delayed(partition)(f)
+            logging.debug(d)
+            results.append(d)
+        runme = delayed(store)(results, "data/results.out")
+        logging.debug(runme)
+        runme.compute(num_workers=4)
+    except:
+        logging.error(sys.exc_info())
+
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()

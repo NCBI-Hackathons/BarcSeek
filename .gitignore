@@ -7,3 +7,14 @@
 # Python byte-code stuff
 __pycache__/
 *.py[cod]
+
+# ignore idea, dask config files
+.idea/
+.dask/
+
+# ignore dummy data files
+data/
+
+# ignore log, temp output files
+*.log
+*.out
