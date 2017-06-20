@@ -31,9 +31,9 @@ optional arguments:
 ![alt text](https://i.imgur.com/JZrY1Yi.png) 
 
 ## Sample Input Files
-- FASTQ File
-- Barcode.csv
-- sample_sheet.tab
+- FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
+- Barcode.csv: [link](barcodes_csv.txt)
+- sample_sheet.tab: [link](Sample_sheet.txt)
 
 ## Software Dependencies
 - DASK (http://dask.pydata.org/en/latest/)
