@@ -4,6 +4,7 @@
 
 import sys
 import argparse
+
 import csv
 from itertools import chain, islice
 from collections import Counter, defaultdict
@@ -11,7 +12,6 @@ import json
 import regex
 
 from partition import IUPAC_CODES
-
 
 if sys.version_info.major is not 3 and sys.version_info.minor < 5:
     sys.exit("Please use Python 3.5 or higher")
@@ -36,7 +36,7 @@ def _set_args():
      /_)^ --,r'
     |b      |b
      ''',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=argparse.RawTextHelpFormatter,
         add_help=True
     )
     parser.add_argument(
@@ -46,7 +46,7 @@ def _set_args():
         type=str,
         default=None,
         metavar='FORWARD FASTQ',
-        help="Provide a filepath for the Forward FASTQ file.",
+        help="Provide a filepath for the Forward FASTQ file.\n[REQUIRED]",
         required=True
     )
     parser.add_argument(
@@ -56,7 +56,7 @@ def _set_args():
         type=str,
         default=None,
         metavar='REVERSE FASTQ',
-        help="Provide a filepath for the Reverse FASTQ file."
+        help="Provide a filepath for the Reverse FASTQ file.\n[OPTIONAL]"
     )
     parser.add_argument(
         '-s',
@@ -65,7 +65,7 @@ def _set_args():
         type=str,
         default=None,
         metavar='SAMPLE SHEET',
-        help="Provide a filepath for the Sample Sheet file.",
+        help="Provide a filepath for the Sample Sheet file.\n[REQUIRED]",
         required=True
     )
     parser.add_argument(
@@ -75,7 +75,7 @@ def _set_args():
         type=str,
         default=None,
         metavar='BARCODES',
-        help="Provide a filepath for the Barcodes CSV file.",
+        help="Provide a filepath for the Barcodes CSV file.\n[REQUIRED]",
         required=True
     )
     parser.add_argument(
@@ -85,7 +85,7 @@ def _set_args():
         type=int,
         default=1,
         metavar='ERROR',
-        help="This is how many mismatches in the barcode we allowed before rejecting. Default is 1."
+        help="This is how many mismatches in the barcode \nwe allowed before rejecting.\n[OPTIONAL, DEFAULT=1]"
     )
     parser.add_argument(
         '-l',
@@ -94,24 +94,19 @@ def _set_args():
         type=int,
         default=40000,
         metavar='NUMLINES',
-        help='We internally split your input file(s) into many smaller files, after -l lines. Default is 40000'
+        help='We internally split your input file(s) into \nmany smaller files, after -l lines.\n[OPTIONAL, DEFAULT=40000]'
     )
-    parser.add_argument(
-        "--verbose",
-        help="increase output verbosity",
-        action="store_true"
-    )
-
+    
     return parser
 
 
 def expand_iupac(barcode):
     '''
-    Expand IUPAC codes, i.e. turn 'AY' to ['AC', 'AT']
+    Expand IUPAC codes, i.e. turn 'AY' to ['AC', 'AT'], removes 'N's
     '''
     barcode = barcode.upper()
     if all((i in 'ACGTN' for i in set(barcode))):
-        return barcode
+        return barcode.replace('N','')
     else:
         pos = regex.search(r'[%s]' % ''.join(IUPAC_CODES.keys()), barcode).start()
         code = barcode[pos]
@@ -134,7 +129,9 @@ def unpack(collection):
 def barcode_check(barcode_dict):
     '''
     Checks whether or not there are barcodes in use that are ambiguous and could thus recognize the same sequence.
-    For example the barcodes 'AY' and 'AW' both recognize 'AT'
+    For example the barcodes 'AY' and 'AW' both recognize 'AT'.
+    Does not check for ambiguity with regards to UMIs, i.e. strings of 'N'. So 'ACGN' and 'ACGT' are recognized as different 
+    even though they can both match 'ACGT'.
     '''
     barcodes = list(chain.from_iterable(barcode_dict.values()))
     expanded_barcodes = unpack([expand_iupac(bc) for bc in barcodes])
