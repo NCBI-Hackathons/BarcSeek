@@ -1,4 +1,4 @@
-# ![alt text](https://i.imgur.com/wBCpsf8.png) BarcSeek
+# BarcSeek <div style="text-align: right">![alt text](https://i.imgur.com/wBCpsf8.png)</div>
 
 A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarcSeek. Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York and Boston.
 
