@@ -12,7 +12,10 @@ import itertools
 from copy import deepcopy
 from typing import Optional, Union, Tuple, List, Dict
 
-import fastq
+try:
+    import fastq
+except ImportError:
+    sys.exit("Please leave this module in its directory to load the fastq module")
 
 try:
     import regex
