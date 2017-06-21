@@ -89,10 +89,11 @@ The command line interface also provides some sanity checks, including checking 
 
 ### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
-### Partitioning: The partitioning code matches barcodes with reads, using the regex library.
+### Partitioning: The partitioning code pairs barcodes with sample reads, using the regex library.
 This section can be conceptualized as the worker. If passed, this section can handle ambiguous nucleotides (as given by the IUPAC standard, e.g. Y = C or T). It trims barcode sequences from the reads, then writes trimmed reads back to a FASTQ file(s) titled by barcode.
 
-### Output: The parallelization code then re-assembles the files into the proper matched barcode-sample output for the user. The output is provided as one or two files (depending on forward and reverse reads) in the directory of the original FASTQ files.
+### Output: The parallelization code then re-assembles the internal files into correctly matched, unambiguous barcode-sample outputs for the user. 
+The output is provided as one or two files (depending on forward and reverse reads) in the directory of the original FASTQ files.
 
 ### Statistics and Quality Control: This counts number of reads in the output.
 
