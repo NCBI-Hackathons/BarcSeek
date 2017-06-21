@@ -38,9 +38,9 @@ The inputs required are:
 
 ```
 usage: BarcSeek.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
-                   BARCODES [-e ERROR] [-l NUMLINES] [--verbose]
+                   BARCODES [-e ERROR] [-l NUMLINES]
 
-                    -----------------------------------
+                     -----------------------------------
                     < Pull DNA barcodes from FASTQ files >
                      -----------------------------------
                         _______ 
@@ -55,19 +55,24 @@ optional arguments:
   -h, --help            show this help message and exit
   -f FORWARD FASTQ, --forward-fastq FORWARD FASTQ
                         Provide a filepath for the Forward FASTQ file.
+                        [REQUIRED]
   -r REVERSE FASTQ, --reverse-fastq REVERSE FASTQ
                         Provide a filepath for the Reverse FASTQ file.
+                        [OPTIONAL]
   -s SAMPLE SHEET, --sample-sheet SAMPLE SHEET
                         Provide a filepath for the Sample Sheet file.
+                        [REQUIRED]
   -b BARCODES, --barcodes BARCODES
                         Provide a filepath for the Barcodes CSV file.
+                        [REQUIRED]
   -e ERROR, --error ERROR
-                        This is how many mismatches in the barcode we allowed
-                        before rejecting. Default is 1.
+                        This is how many mismatches in the barcode
+                        we allowed before rejecting.
+                        [OPTIONAL, DEFAULT=1]
   -l NUMLINES, --numlines NUMLINES
-                        We internally split your input file(s) into many
-                        smaller files, after -l lines. Default is 40000
-  --verbose             increase output verbosity
+                        We internally split your input file(s) into
+                        many smaller files, after -l lines.
+                        [OPTIONAL, DEFAULT=40000]
 ```
 
 The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html).
