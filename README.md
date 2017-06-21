@@ -11,6 +11,9 @@ The architecture for this project was conceptualized as "the manager-worker rela
 
 More technically, once we have taken in the data and performed the proper validation via the command line interface (BarcSeek.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
 
+## Who should use this module?
+Someone who is looking to demultiplex genomic output data from many different machines which may use conventional or unconventional barcoding schemes.
+
 ## Project Architecture
 ### Graphical Pipeline Overview
 ![alt text](http://i.imgur.com/PFWTlk6.png)
