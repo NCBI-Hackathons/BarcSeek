@@ -17,6 +17,7 @@ This pipeline can be used to demultiplex:
 - ChIPseq
 - CLIP-Seq
 - Small RNAseq
+
 and other sequencing data sets. It can be used on single cell sequencing data as well.
 
 ## Project Architecture
