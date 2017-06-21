@@ -34,11 +34,13 @@ The inputs required are:
 - filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required)
 - barcode.csv file (-b BARCODES, required)
 - error rate (-e ERROR RATE, required but defaults to 2).
+- number of lines to divide the FASTQ file into for one paritition to work on (-l NUMLINES, default is 40,000)
 
 ```
-usage: Barcodes.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
-                   BARCODES [-e ERROR RATE]
-                     -----------------------------------
+usage: BarcSeek.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
+                   BARCODES [-e ERROR] [-l NUMLINES] [--verbose]
+
+                    -----------------------------------
                     < Pull DNA barcodes from FASTQ files >
                      -----------------------------------
                         _______ 
@@ -47,19 +49,25 @@ usage: Barcodes.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
       }        /~~.    \_______/
      /_)^ --,r'
     |b      |b
-    
+
+
 optional arguments:
   -h, --help            show this help message and exit
   -f FORWARD FASTQ, --forward-fastq FORWARD FASTQ
-                        Provide the forward or single-end FASTQ file [required]
+                        Provide a filepath for the Forward FASTQ file.
   -r REVERSE FASTQ, --reverse-fastq REVERSE FASTQ
-                        Provide the reverse FASTQ file [optional]
+                        Provide a filepath for the Reverse FASTQ file.
   -s SAMPLE SHEET, --sample-sheet SAMPLE SHEET
-                        Sample table, [required]
+                        Provide a filepath for the Sample Sheet file.
   -b BARCODES, --barcodes BARCODES
-                        Barcodes CSV file, [required]
-  -e ERROR RATE, --error-rate ERROR RATE
-                        Barcodes error rate, [required, defaults to '2']
+                        Provide a filepath for the Barcodes CSV file.
+  -e ERROR, --error ERROR
+                        This is how many mismatches in the barcode we allowed
+                        before rejecting. Default is 1.
+  -l NUMLINES, --numlines NUMLINES
+                        We internally split your input file(s) into many
+                        smaller files, after -l lines. Default is 40000
+  --verbose             increase output verbosity
 ```
 
 The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html) .
