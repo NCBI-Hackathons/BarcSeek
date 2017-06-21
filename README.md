@@ -9,7 +9,30 @@ We also aimed to make this project interface with many different barcoding strat
 
 Once we have taken in the data (and performed the proper validation), the program takes a parallel-data-processing approach  where the input genomic data is divided up among many different workers (partitioners), taking advantage of the DASK parallel computing library for data analytics to divide the data up among the workers (which we conceptualized as the manager). The partitioners are able to use a regex to handle standard IUPAC nucleotide notations.  The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user.
 
-## Command Line Interface Usage
+## Project Architecture
+### Graphical Pipeline Overview
+![alt text](https://i.imgur.com/EPEYBDq.png)
+
+### Test Case Approach: We developed sample test cases to test functionality of our code.
+We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
+- Sample barcodes: 6 nucleotides
+- Degenerate sequences: 8 nucleotides
+- Sequence of interest was 50 nucleotides. 
+
+In essence the sequence information is the same, but the barcode and UMI information has been transposed. The schematic below provides additional information on how the test sequences were designed.
+![alt text](https://i.imgur.com/jz77TaE.png)
+In the sample genomic data generation, the quality scores were sampled from phred33 scale, so its likely that some barcodes nucleotides may be low enough to count as an error or, at least, uncertain. We automated generation of these test fastqs. The code for generation of these test fastq files is linked [here](/test.cases/test.case.generator.R)
+
+The contents of these files can be found [here](/test.cases).
+
+### Command Line Interface: The command line interface takes inputs from the user to pass through the program. 
+The inputs required are: 
+- filepath for the forward read FASTQ file (-f FORWARD FASTQ, required)
+- filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional)
+- filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required)
+- barcode.csv file (-b BARCODES, required)
+- error rate (-e ERROR RATE, required but defaults to 2).
+
 ```
 usage: Barcodes.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
                    BARCODES [-e ERROR RATE]
@@ -37,37 +60,13 @@ optional arguments:
                         Barcodes error rate, [required, defaults to '2']
 ```
 
-## Project Architecture
-### Graphical Pipeline Overview
-![alt text](https://i.imgur.com/EPEYBDq.png)
-
-### Test Case Approach: We developed sample test cases to test functionality of our code.
-We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
-- Sample barcodes: 6 nucleotides
-- Degenerate sequences: 8 nucleotides
-- Sequence of interest was 50 nucleotides. 
-
-In essence the sequence information is the same, but the barcode and UMI information has been transposed. The schematic below provides additional information on how the test sequences were designed.
-![alt text](https://i.imgur.com/jz77TaE.png)
-In the sample genomic data generation, the quality scores were sampled from phred33 scale, so its likely that some barcodes nucleotides may be low enough to count as an error or, at least, uncertain. We automated generation of these test fastqs. The code for generation of these test fastq files is linked [here](/test.cases/test.case.generator.R)
-
-The contents of these files can be found [here](/test.cases).
-
-### Command Line Interface: The command line interface takes inputs from the user to pass through the program. 
-The inputs required are: 
-- filepath for the forward read FASTQ file (-f FORWARD FASTQ, required)
-- filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional)
-- filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required)
-- barcode.csv file (-b BARCODES, required)
-- error rate (-e ERROR RATE, required but defaults to 2).
-
-The command line interface provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes (e.g. [link] (http://www.bioinformatics.org/sms/iupac.html))
+The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes (e.g. [link] (http://www.bioinformatics.org/sms/iupac.html))
 
 ### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
-### Partitioning: The partitioning code takes in the divided data, in the form of different internal files, and paritions the barcode using regex.
+### Partitioning: The partitioning code takes in the divided data, in the form of different internal files, and paritions the barcode using regex. The files generated (work) from the parititioning code is then sent back to the parallelization script in the form of many internal files.
 
-### Output: The work from the parititioning code is then taken back in to the parallelization script in the form of many internal files, and re-assembled into the proper matched barcode-sample output files for the user.
+### Output: The parallelization code then re-assembles the files into the proper matched barcode-sample output for the user. The output is provided as one or two files (depending on forward and reverse reads) in the directory of the original FASTQ files.
 
 ## Sample Input Files
 - Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
