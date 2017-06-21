@@ -94,7 +94,7 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
 
 
 def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[str]=None, error_rate: Optional[int]=None):
-    """stuff"""
+    """Partition a FASTQ file into component barcodes"""
     try:
         reads = fastq.read_fastq(fastq=filename, pair=reverse) # type: Tuple[fastq.Read]
     except FileNotFoundError as error:
