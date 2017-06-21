@@ -1,6 +1,12 @@
 import os
 import re
-import matplotlib.pyplot as plt
+
+import sys
+try:
+    import matplotlib.pyplot as plt
+except ImportError as error:
+    sys.exit("Please install " + error.name)
+
 import numpy as np
 
 #output_directory=“/Users/josephb1/Barcode_Partitioning/test.cases/“
