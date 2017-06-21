@@ -7,7 +7,7 @@ Wherever there is massive multiplexing in genomic sequencing data, a massive amo
 
 We also aimed to make this project interface with many different barcoding strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
-Once we have taken in the data (and performed the proper validation), the program takes a parallel-data-processing approach  where the input genomic data is divided up among many different workers (partitioners), taking advantage of the DASK parallel computing library for data analytics to divide the data up among the workers (which we conceptualized as the manager). The partitioners are able to use a regex to handle standard IUPAC nucleotide notations.  The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user.
+Once we have taken in the data (and performed the proper validation), the program takes a parallel-data-processing approach  where the input genomic data is divided up among many different partitioners, taking advantage of the DASK parallel computing library for data analytics to divide the data up among the workers (which we conceptualized as "the manager-worker relationship"). The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user.
 
 ## Project Architecture
 ### Graphical Pipeline Overview
