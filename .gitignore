@@ -18,3 +18,9 @@ data/
 # ignore log, temp output files
 *.log
 *.out
+
+# ignore stuff from VS Code
+.vscode/
+
+# ignore .DS_Store
+.DS_Store
