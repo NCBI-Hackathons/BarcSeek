@@ -20,7 +20,7 @@ except ImportError as error:
 
 
 try:
-    from parallel import parallelize
+    # from parallel import parallelize
     from partition import IUPAC_CODES
 except ImportError:
     sys.exit("Please leave this program in its directory to load custom modules")
@@ -175,6 +175,7 @@ def extract_barcodes(sample_sheet, barcode_csv):
 
 
 def main(args):
+    from parallel import parallelize
     '''Run the program'''
     if args['numlines']%4 != 0:
         raise InputError('-l  must be divisible by four'+str(args['numlines']))

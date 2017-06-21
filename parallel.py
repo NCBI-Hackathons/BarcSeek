@@ -16,7 +16,8 @@ import subprocess
 import shlex
 import re
 from time import sleep
-from partition import fpartition, partition
+from partition import partition
+from BarcSeek import extract_barcodes
 
 import itertools
 from typing import Optional
@@ -152,7 +153,26 @@ def _fetch_chunk_files_(num_lines: int, forward_fastq: str, reverse_fastq: Optio
     return master_dict
 
 
+def _join_output_(sample_dict:dict, forward_fastq:str, reverse_fastq: Optional[str] = None):
+    (d, fn) = _get_dir_fn_(forward_fastq)
+
+    os.chdir(d)
+    print("changed to dir %s" % os.getcwd())
+
+    for sample in sample_dict.keys():
+        multi_pattern = sample + "_" + "fwd" + "_x*_" + fn
+        output_file = sample + "_fwd_" + fn
+        print("joining output for %s" % sample)
+        cmd = "cat " + multi_pattern + " > " +  output_file
+        rmc = "rm -f " + multi_pattern
+        rc = subprocess.call(cmd, shell=True)
+        rc2 = subprocess.call(rmc, shell=True)
+        if rc:
+            raise Exception("Error joining output files"
+                            )
+
 def _sanity_checks_(num_lines:int, forward_fastq:str, reverse_fastq: Optional[str] = None):
+    logger.debug("sanity checks num_lines %i, forward_fastq %s, reverse %s" % (num_lines, forward_fastq, reverse_fastq))
     (fdir, ffn) = _get_dir_fn_(forward_fastq)
     (rdir, rfn) = _get_dir_fn_(reverse_fastq)
     if rdir and not (fdir == rdir):
@@ -176,15 +196,17 @@ def _partition_(barcodes:dict, forward_fn:str, reverse_fn: Optional[str] = None)
 
 
 def _reduce_(results:list):
-    return results
+    sleep(3)
 
 
-def parallelize(barcodes:dict, num_lines:int, forward_fastq:str, reverse_fastq:Optional[str] = None):
+
+
+def parallelize(sample_dict:dict, num_lines:int, forward_fastq:str, reverse_fastq:Optional[str] = None):
     orig_home = os.getcwd()
 
     _sanity_checks_(num_lines, forward_fastq, reverse_fastq)
     master_dict  = _fetch_chunk_files_(num_lines, forward_fastq, reverse_fastq)
-    _dump_dict_(master_dict)
+    logger.debug(json.dumps(master_dict))
     logger.debug("iterating over partition calls")
     results = []
 
@@ -192,50 +214,32 @@ def parallelize(barcodes:dict, num_lines:int, forward_fastq:str, reverse_fastq:O
         f_file = master_dict[p]['f_input']
         r_file = master_dict[p]['r_input']
         logger.debug("calling partition")
-        result = dask.delayed(_partition_)(barcodes, f_file, r_file)
+        result = dask.delayed(_partition_)(sample_dict, f_file, r_file)
         results.append(result)
 
     logger.debug("calling reduce")
     the_job = dask.delayed(_reduce_)(results)
-    #the_job.visualize()
     the_job.compute(num_workers=4)
 
+    join_out = _join_output_(sample_dict, forward_fastq, reverse_fastq)
 
+    #the_job.visualize()
 
-
-
-
-
-'''
-inputs: output file path, path to 2 fastq files, one forward, one reverse (optional)
-        barcode list, sample_sheet dictionary
-        TODO: number of chunks
-outputs: none, or path to output files, one output file per sample
-
-do: -- fetch list of filenames. @TODO: how to determine forward, reverse??
-    -- read barcode file into an tuple of tuples
-    -- read sample_sheet into dictionary?
-    -- create a worker for each forward/reverse file pair
-         worker:(file path1, file path2?, barcode list)
-         worker produces: output files of the format barcode_inputfilename
-    -- join all barcode output files into one file per barcode, for forward and reverse files
-'''
 
 def main():
     try:
-        _run_command_("rm -f /home/jcabraham/python-projects/Barcode_Partitioning/data/x*")
-        barcodes = {
-            'sample1': ['AGTGCA' ],
-            'sample2': ['TCACAG'],
-            'sample1': ['AGTGCA'],
-            'sample2': ['CAGATC']
-        }
+        #_run_command_("rm -f /home/jcabraham/python-projects/Barcode_Partitioning/test.cases/*x*")
+        sample_file = '/home/jcabraham/python-projects/Barcode_Partitioning/new.sample_sheet.txt'
+        barcode_file = '/home/jcabraham/python-projects/Barcode_Partitioning/new_barcodes_csv.txt'
+        samples = extract_barcodes(sample_file, barcode_file)
+        logger.debug(json.dumps(samples))
 
-        num_lines = 4
-        forward_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/data/tiny_f.fastq"
-        #reverse_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/data/test01_r.fastq"
+        num_lines = 20000
+        forward_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/test.cases/little1.R1.fastq"
+        reverse_fastq = ''
+
         parallelize(
-            barcodes=barcodes,
+            sample_dict=samples,
             num_lines=num_lines,
             forward_fastq=forward_fastq
         #    reverse_fastq=reverse_fastq
