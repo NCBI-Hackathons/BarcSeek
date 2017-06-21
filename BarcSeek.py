@@ -136,10 +136,10 @@ def extract_barcodes(sample_sheet, barcode_csv):
     '''
     Returns a dictionary, Keys are the sample_names,
     '''
-    barcode_file = list(csv.reader(open(barcode_csv), delimiter=','))
+    barcode_file = csv.reader(open(barcode_csv), delimiter=',')
     ss_file = list(csv.reader(open(sample_sheet), delimiter='\t'))[1:]
-    csv_dict = {int(line[0]):line[1] for line in barcode_file}
-    ss_dict = {samplename:[] for samplename in islice(chain.from_iterable(ss_file),2,None,3)}
+    csv_dict = {int(line[0]): line[1] for line in barcode_file}
+    ss_dict = {samplename: [] for samplename in islice(chain.from_iterable(ss_file), 2, None, 3)}
     for line in ss_file:
         barcode1, barcode2, samplename = line[0], line[1], line[2]
         if barcode1:
