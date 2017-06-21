@@ -1,4 +1,5 @@
-# BarcSeek ![alt text](https://i.imgur.com/wBCpsf8.png)
+# ![alt text](https://i.imgur.com/wBCpsf8.png) BarcSeek
+
 A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarcSeek. Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York and Boston.
 
 ## Introduction
@@ -51,7 +52,9 @@ In the sample genomic data generation, the quality scores were sampled from phre
 
 The contents of these files can be found [here](/test.cases).
 
-Command Line Interface: The command line interface takes inputs from the user to pass through the program. The inputs required are filepath for the forward read FASTQ file (-f FORWARD FASTQ, required), a filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional), a filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required), a barcode.csv file (-b BARCODES, required), and an error rate (-e ERROR RATE, required but defaults to 2). 
+Command Line Interface: The command line interface takes inputs from the user to pass through the program. The inputs required are filepath for the forward read FASTQ file (-f FORWARD FASTQ, required), a filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional), a filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required), a barcode.csv file (-b BARCODES, required), and an error rate (-e ERROR RATE, required but defaults to 2).
+
+The command line interface provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes (e.g. [link] (http://www.bioinformatics.org/sms/iupac.html))
 
 Parallelization:
 
@@ -60,9 +63,9 @@ Partitioning:
 Output:
 
 ## Sample Input Files
-- FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
-- Barcode.csv: [link](barcodes_csv.txt)
-- sample_sheet.tab: [link](Sample_sheet.txt)
+- Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
+- Sample Barcode.csv: [link](barcodes_csv.txt)
+- Sample sample_sheet.tab: [link](Sample_sheet.txt)
 
 ## Software Dependencies
 - Python 3.5 [link](https://www.python.org/downloads/release/python-350/)
