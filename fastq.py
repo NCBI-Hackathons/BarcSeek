@@ -121,7 +121,7 @@ class Read(object):
             self._qual = self._qual[:start] + (self._qual[end:] if end else '')
 
     read_id = property(fget=__repr__, doc='The read ID')
-    name = property(fget=__repr__, doc='The read ID')
+    name = read_id
     forward = property(fget=_forward, doc='Forward sequence')
     reverse = property(fget=_reverse, doc='Reverse sequence')
     paired = property(fget=_is_paired, doc='Is this read paired?')
