@@ -18,7 +18,14 @@ except ImportError as error:
 
 
 def stats_barc(output_files: List[str], output_directory: Optional[str]=None) -> None:
-    """docstring"""
+    """
+    This function generates basic stats on demultiplexed datasets.
+    Currently, it takes all output files as argument in the form of a list, 
+    counts the number of fastq lines per file and
+    outputs a pdf file with a barplot of reads/demultiplexed dataset. The output directory 
+    for this pdf file is an optional argument with default set to the directory containing 
+    the fastq files.
+    """
     if not output_directory:
         output_directory = os.path.dirname(output_files[0]) # type: str
     file_names = tuple(os.path.basename(file) for file in output_files) # type: List[str]
