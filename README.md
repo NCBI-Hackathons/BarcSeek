@@ -1,4 +1,4 @@
-# BarcSeek ![alt text](https://i.imgur.com/Bxh9lGc.png) #![alt text](https://i.imgur.com/wBCpsf8.png) 
+# BarcSeek ![alt text](https://i.imgur.com/Bxh9lGc.png)
 
 A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarcSeek. Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York and Boston.
 
@@ -82,3 +82,5 @@ Output:
 - Uniform exception handling
 - Managing whitespace considerations in CLI file & making code compatible with Python style guide. [(link)](http://legacy.python.org/dev/peps/pep-0008/)
 - Add wiki-style section to provide use cases using various FASTQ files & barcoding strategies. [(link)](https://github.com/mojaveazure/angsd-wrapper/wiki)
+
+# ![alt text](https://i.imgur.com/wBCpsf8.png) 
