@@ -151,13 +151,3 @@ def partition(
         if reverse:
             rfile.close()
     return output_list
-
-
-def fpartition(
-        barcodes: Dict[str, List[str]],
-        filename: str,
-        reverse: Optional[str]=None,
-        error_rate: Optional[int]=None
-) -> None:
-    sleep(5)
-    print("Slept")
