@@ -9,7 +9,7 @@ Another goal of this project was to make this project interface with many differ
 
 The architecture for this project was conceptualized as "the manager-worker relationship" where the manager divides up the work to be done in an efficient way, the workers do the work, then the workers return the work to the manager to assemble and prepare the information for presentation back to the user.
 
-More technically, once we have taken in the data and performed the proper validation via the command line interface (CLI.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
+More technically, once we have taken in the data and performed the proper validation via the command line interface (BarcSeek.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
 
 ## Project Architecture
 ### Graphical Pipeline Overview
