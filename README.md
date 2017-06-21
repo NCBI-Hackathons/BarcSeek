@@ -25,29 +25,39 @@ usage: Barcodes.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
 optional arguments:
   -h, --help            show this help message and exit
   -f FORWARD FASTQ, --forward-fastq FORWARD FASTQ
-                        Provide the forward or single-end FASTQ file
+                        Provide the forward or single-end FASTQ file [required]
   -r REVERSE FASTQ, --reverse-fastq REVERSE FASTQ
                         Provide the reverse FASTQ file [optional]
   -s SAMPLE SHEET, --sample-sheet SAMPLE SHEET
-                        Sample table
+                        Sample table, [required]
   -b BARCODES, --barcodes BARCODES
-                        Barcodes CSV file
+                        Barcodes CSV file, [required]
   -e ERROR RATE, --error-rate ERROR RATE
-                        Barcodes error rate, defaults to '2'
+                        Barcodes error rate, [required, defaults to '2']
 ```
 
 ## Project Architecture
 Pipeline Overview:
 ![alt text](https://i.imgur.com/EPEYBDq.png)
 
-Test Case Approach: Generated two test FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
+Test Case Approach: We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
 - Sample barcodes: 6 nucleotides
 - Degenerate sequences: 8 nucleotides
 - Sequence of interest was 50 nucleotides. 
 
 In essence the sequence information is the same, but the barcode and UMI information has been transposed. The schematic below provides additional information on how the test sequences were designed.
 ![alt text](https://i.imgur.com/jz77TaE.png)
-The quality scores are all sampled from phred33 scale, so its likely that some barcodes nucleotides may be low enough to count as an error or, at least, uncertain. We automated generation of these test fastqs. The code for generation of these test fastq files is linked [here](/test.cases/test.case.generator.R)
+In the sample genomic data generation, the quality scores were sampled from phred33 scale, so its likely that some barcodes nucleotides may be low enough to count as an error or, at least, uncertain. We automated generation of these test fastqs. The code for generation of these test fastq files is linked [here](/test.cases/test.case.generator.R)
+
+The contents of these files can be found [here](/test.cases).
+
+Command Line Interface: The command line interface takes inputs from the user to pass through the program. The inputs required are filepath for the forward read FASTQ file (-f FORWARD FASTQ, required), a filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional), a filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required), a barcode.csv file (-b BARCODES, required), and an error rate (-e ERROR RATE, required but defaults to 2). 
+
+Parallelization:
+
+Partitioning:
+
+Output:
 
 ## Sample Input Files
 - FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
