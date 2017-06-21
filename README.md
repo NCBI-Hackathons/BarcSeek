@@ -13,7 +13,7 @@ More technically, once we have taken in the data and performed the proper valida
 
 ## Project Architecture
 ### Graphical Pipeline Overview
-![alt text](https://i.imgur.com/EPEYBDq.png)
+![alt text](http://i.imgur.com/PFWTlk6.png)
 
 ### Test Case Approach: We developed sample test cases to test functionality of our code.
 We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
