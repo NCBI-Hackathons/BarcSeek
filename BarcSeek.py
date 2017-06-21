@@ -120,7 +120,8 @@ def unpack(collection):
     '''
     result = [] # type: List
     for item in collection:
-        if isinstance(item, (list, set, tuple)):
+        # if isinstance(item, (list, set, tuple)):
+        if hasattr(item, '__iter__') and not isinstance(item, str):
             result.extend(unpack(collection=item))
         else:
             result.append(item)
@@ -131,7 +132,7 @@ def barcode_check(barcode_dict):
     '''
     Checks whether or not there are barcodes in use that are ambiguous and could thus recognize the same sequence.
     For example the barcodes 'AY' and 'AW' both recognize 'AT'.
-    Does not check for ambiguity with regards to UMIs, i.e. strings of 'N'. So 'ACGN' and 'ACGT' are recognized as different 
+    Does not check for ambiguity with regards to UMIs, i.e. strings of 'N'. So 'ACGN' and 'ACGT' are recognized as different
     even though they can both match 'ACGT'.
     '''
     barcodes = chain.from_iterable(barcode_dict.values())
