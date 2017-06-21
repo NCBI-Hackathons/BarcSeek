@@ -10,6 +10,7 @@ from itertools import chain, islice
 from collections import Counter, defaultdict
 import json
 import regex
+from parallel import parallelize
 
 from partition import IUPAC_CODES
 
@@ -167,15 +168,19 @@ def main(args):
     '''Run the program'''
     if args['numlines']%4 != 0:
         raise InputError('-l  must be divisible by four'+str(args['numlines']))
-    barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
+    sample_dict = extract_barcodes(args['sample'],args['barcodes'])
+    barcode_ambiguity_dict = barcode_check(sample_dict)
     if barcode_ambiguity_dict:
         raise InputError("There are ambiguous barcodes \n" + str(json.dumps(barcode_ambiguity_dict, indent=2)))
     #call the parallel layer which does the work:
+    '''def parallelize(barcodes:tuple, samples:dict, num_chunks:int, forward_fastq:str,
+                reverse_fastq:Optional(str) = None)'''
+    parallelize(sample_dict, args['forward'], args['num_lines'], reverse_fastq = args['reverse'])
 
 
 if __name__ == '__main__':
     PARSER = _set_args() # type: argparse.ArgumentParser
     if not sys.argv[1:]:
         sys.exit(PARSER.print_help())
-    ARGS = {key: value for key, value in vars(PARSER.parse_args()).items() if value is not None} # type: Dict[str, Any]
+    ARGS = vars(PARSER.parse_args()) # type: Dict[str, Any]
     main(ARGS)
