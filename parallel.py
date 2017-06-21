@@ -110,18 +110,40 @@ def _get_dir_fn_(fastq_file:str) -> tuple:
         return "",""
 
 
-def parallelize(barcodes:tuple, samples:dict, num_chunks:int, forward_fastq:str,
-                reverse_fastq:Optional[str] = None):
-    (fdir, ffn) = _get_dir_fn_(forward_fastq)
-    (rdir, rfn) = _get_dir_fn_(reverse_fastq)
-    if rdir and not (fdir == rdir):
-        raise Exception("forward fastq and reverse fastq must be in same directory: %s   %s" % forward_fastq, reverse_fastq)
-    orig_dir = os.getcwd()
+def _split_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional(str) = None):
     (rc, out) = _split_fastq_(forward_fastq, num_chunks)
     if not rc == 0:
         raise Exception("Error splitting files, error code %s" % rc)
 
-    os.chdir(orig_dir)
+    if reverse_fastq:
+        (rc, out) = _split_fastq_(reverse_fastq, num_chunks)
+        if not rc == 0:
+            raise Exception("Error splitting files, error code %s" % rc)
+
+
+def _fetch_chunk_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional(str) = None) -> tuple:
+    (dir, fn) = _get_dir_fn_(forward_fastq)
+
+    if reverse_fastq:
+        (_, rn) = _get_dir_fn_(reverse_fastq)
+        _split_files_(num_chunks, forward_fastq, reverse_fastq)
+
+
+def _sanity_check_directory_(forward_fastq:str, reverse_fastq: Optional(str) = None):
+    (fdir, ffn) = _get_dir_fn_(forward_fastq)
+    (rdir, rfn) = _get_dir_fn_(reverse_fastq)
+    if rdir and not (fdir == rdir):
+        raise Exception("forward fastq and reverse fastq must be in same directory: %s   %s" % forward_fastq,
+                        reverse_fastq)
+
+
+def parallelize(barcodes:tuple, samples:dict, num_chunks:int, forward_fastq:str,
+                reverse_fastq:Optional(str) = None):
+    orig_home = os.getcwd()
+    _sanity_check_directory_(forward_fastq, reverse_fastq)
+    (forward_files, reverse_files) = _fetch_chunk_files_(num_chunks, forward_fastq, reverse_fastq)
+
+
 
 
 
