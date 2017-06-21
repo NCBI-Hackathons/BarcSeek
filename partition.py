@@ -20,7 +20,7 @@ except ImportError as error:
     sys.exit("Please install " + error.name)
 
 
-IUPAC_CODES = {
+IUPAC_CODES = { # type: Dict[str, str]
     'R': 'AG',
     'Y': 'CT',
     'S': 'GC',
@@ -38,7 +38,7 @@ def fix_iupac(barcode: str) -> str:
     barcode [str]   The barcode sequence to remove IUPAC codes from
                         These codes will be replaced with regex-style options
     """
-    new_barcode = barcode
+    new_barcode = barcode # type: str
     for code, sub in IUPAC_CODES.items(): # type: str, str
         new_barcode = new_barcode.replace(code, '[%s]' % sub) # type: str
     return new_barcode
@@ -86,7 +86,7 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
     else:
         raise ValueError("There only be one or two barcodes")
     try:
-        trimmed = deepcopy(read)
+        trimmed = deepcopy(read) # type: fastq.Read
         for index, reg in enumerate(regexes): # type: int, _regex.Pattern
             reverse = bool(index % 2) # type: bool
             for i in range(reg.groups): # type: int
@@ -123,20 +123,20 @@ def partition(
         #   Create output names for forward and reverse files
         output_name = output_directory + '/' + sample_name + '_fwd.fastq' # type: str
         if reverse:
-            reverse_name = output_name.replace('fwd', 'rev')
-            rfile = open(reverse_name, 'w')
+            reverse_name = output_name.replace('fwd', 'rev') # type: str
+            rfile = open(reverse_name, 'w') # type: _io.TextIOWrapper
         else:
             reverse_name = None
         output_list.append((output_name, reverse_name))
         #   Zip the arguments together for the map
-        args = zip(
+        args = zip( # type: sip
             reads,
             itertools.repeat(barcode_list),
             itertools.repeat(error_rate)
         )
         #   Run the partitioning for each read for this barcode
-        results = map(lambda tup: match_barcode(*tup), args)
-        with open(output_name, 'w') as ofile:
+        results = map(lambda tup: match_barcode(*tup), args) # type: map
+        with open(output_name, 'w') as ofile: # type: _io.TextIOWrapper
             for read in filter(None, results): # type: fastq.Read
                 ofile.write(read.fastq)
                 ofile.write('\n')
