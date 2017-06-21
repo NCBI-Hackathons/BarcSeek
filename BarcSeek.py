@@ -3,19 +3,28 @@
 """Parition a FASTQ file (or paired FASTQ files) based on barcodes"""
 
 import sys
-import argparse
-
-import csv
-from itertools import chain, islice
-from collections import Counter, defaultdict
-import json
-import regex
-from parallel import parallelize
-
-from partition import IUPAC_CODES
-
 if sys.version_info.major is not 3 and sys.version_info.minor < 5:
     sys.exit("Please use Python 3.5 or higher")
+
+
+import csv
+import json
+import argparse
+from itertools import chain, islice
+from collections import Counter, defaultdict
+
+try:
+    import regex
+except ImportError as error:
+    sys.exit("Please install " + error.name)
+
+
+try:
+    from parallel import parallelize
+    from partition import IUPAC_CODES
+except ImportError:
+    sys.exit("Please leave this program in its directory to load custom modules")
+
 
 class InputError(Exception):
     '''An error occurred because of your input'''
