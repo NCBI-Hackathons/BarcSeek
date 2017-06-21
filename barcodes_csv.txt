@@ -1,4 +1,3 @@
-Index,Barcode
 1,AGACTC
 2,AGAYWC
 3,AGCTCA
@@ -22,4 +21,3 @@ Index,Barcode
 21,GTACCA
 22,GTACTC
 23,GTCTAG
-
