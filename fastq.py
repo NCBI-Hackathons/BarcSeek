@@ -62,14 +62,14 @@ class Read(object):
             if not self.paired:
                 return None
             out = (
-                '>' + self.read_id,
+                '@' + self.read_id,
                 self._rseq,
                 '+' + self.read_id,
                 self._rqual
             )
         else:
             out = (
-                '>' + self.read_id,
+                '@' + self.read_id,
                 self._seq,
                 '+' + self.read_id,
                 self._qual
