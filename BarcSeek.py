@@ -6,7 +6,7 @@ import sys
 import argparse
 import csv
 from itertools import chain, islice
-from collections import Counter
+from collections import Counter, defaultdict
 import json
 import regex
 
@@ -83,15 +83,25 @@ def _set_args():
         '--error',
         dest='error',
         type=int,
-        default=2,
+        default=1,
         metavar='ERROR',
-        help="This is how many mismatches in the barcode we allowed before rejecting. Default is 2."
+        help="This is how many mismatches in the barcode we allowed before rejecting. Default is 1."
+    )
+    parser.add_argument(
+        '-l',
+        '--numlines',
+        dest='numlines',
+        type=int,
+        default=40000,
+        metavar='NUMLINES',
+        help='We internally split your input file(s) into many smaller files, after -l lines. Default is 40000'
     )
     parser.add_argument(
         "--verbose",
         help="increase output verbosity",
         action="store_true"
     )
+
     return parser
 
 
@@ -134,28 +144,30 @@ def barcode_check(barcode_dict):
 
 def extract_barcodes(sample_sheet, barcode_csv):
     '''
-    Returns a dictionary, Keys are the sample_names,
+    Returns a dictionary, Keys are the sample_names, values are the barcodes.
     '''
-    barcode_file = list(csv.reader(open(barcode_csv), delimiter=','))
-    ss_file = list(csv.reader(open(sample_sheet), delimiter='\t'))[1:]
+    with open(sample_sheet) as ss_reader, open(barcode_csv) as barcode_reader:
+        ss_file = islice(csv.reader(ss_reader, delimiter='\t'),1,None)
+        barcode_file = csv.reader(barcode_reader, delimiter=',')
+        csv_dict = {int(line[0]):line[1] for line in barcode_file}
 
-    csv_dict = {int(line[0]):line[1] for line in barcode_file}
-
-    ss_dict = {samplename:[] for samplename in islice(chain.from_iterable(ss_file),2,None,3)}
-    for line in ss_file:
-        barcode1, barcode2, samplename = line[0], line[1], line[2]
-        if barcode1:
-            ss_dict[samplename].append(csv_dict[int(barcode1)])
-        if barcode2:
-            ss_dict[samplename].append(csv_dict[int(barcode2)])
-    filtered_barcodes = list(filter(lambda sample: not(sample[1]), ss_dict.items()))
-    if filtered_barcodes:
-        raise InputError('One of your samples in your sample_sheet.tab has no barcodes associated with itself.')
-    return ss_dict
+        ss_dict = defaultdict(list)
+        for line in ss_file:
+            barcode1, barcode2, samplename = line[0], line[1], line[2]
+            if barcode1:
+                ss_dict[samplename].append(csv_dict[int(barcode1)])
+            if barcode2:
+                ss_dict[samplename].append(csv_dict[int(barcode2)])
+        filtered_barcodes = list(filter(lambda sample: not(sample[1]), ss_dict.items()))
+        if filtered_barcodes:
+            raise InputError('One of your samples in your sample_sheet.tab has no barcodes associated with itself.')
+        return ss_dict
 
 
 def main(args):
     '''Run the program'''
+    if args['numlines']%4 != 0:
+        raise InputError('-l  must be divisible by four'+str(args['numlines']))
     barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
     if barcode_ambiguity_dict:
         raise InputError("There are ambiguous barcodes \n" + str(json.dumps(barcode_ambiguity_dict, indent=2)))
