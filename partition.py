@@ -7,9 +7,10 @@ if sys.version_info.major is not 3 and sys.version_info.minor < 5:
     sys.exit("Please use Python 3.5 or higher for this program")
 
 
+import os
 import itertools
 from copy import deepcopy
-from typing import Optional, Union, Tuple, List
+from typing import Optional, Union, Tuple, List, Dict
 
 import fastq
 
@@ -78,18 +79,45 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
         matches.append(regexes[1].search(read.reverse))
     else:
         raise ValueError("There only be one or two barcodes")
-    if not matches:
+    try:
+        trimmed = deepcopy(read)
+        for index, reg in enumerate(regexes): # type: int, _regex.Pattern
+            reverse = bool(index % 2) # type: bool
+            for i in range(reg.groups): # type: int
+                if i % 2 != 0:
+                    continue
+                start, end = matches[index].span(i + 1) # type: int, int
+                trimmed.trim(start=start, end=end, reverse=reverse)
+    except AttributeError:
         return None
-    trimmed = deepcopy(read)
-    for index, reg in enumerate(regexes): # type: int, _regex.Pattern
-        print("trimming match #", index)
-        if index % 2 != 0:
-            reverse = True # type: bool
-        else:
-            reverse = False # type: int
-        for i in range(reg.groups): # type: int
-            if i % 2 != 0:
-                continue
-            start, end = matches[index].span(i + 1) # type: int, int
-            trimmed.trim(start=start, end=end, reverse=reverse)
     return trimmed
+
+
+def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[str]=None, error_rate: Optional[int]=None):
+    """stuff"""
+    try:
+        reads = fastq.read_fastq(fastq=filename, pair=reverse) # type: Tuple[fastq.Read]
+    except FileNotFoundError as error:
+        sys.exit("Cannot find " + error.filename)
+    output_directory = os.path.dirname(filename) # type: str
+    for sample_name, barcode_list in barcodes.items(): # type: str, List[str]
+        output_name = output_directory + '/' + sample_name + '_fwd.fastq'
+        args = zip(
+            reads,
+            itertools.repeat(barcode_list),
+            itertools.repeat(error_rate)
+        )
+        results = map(lambda tup: match_barcode(*tup), args)
+        if reverse:
+            rfile = open(output_name.replace('fwd', 'rev'), 'w')
+        with open(output_name, 'w') as ofile:
+            for read in filter(None, results): # type: fastq.Read
+                ofile.write(read.fastq)
+                ofile.write('\n')
+                ofile.flush()
+                if reverse:
+                    rfile.write(read.reverse_fastq)
+                    rfile.write('\n')
+                    rfile.flush()
+        if reverse:
+            rfile.close()
