@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-import os
-import re
 
+import re
 import sys
 try:
     import matplotlib.pyplot as plt
@@ -9,18 +8,17 @@ except ImportError as error:
     sys.exit("Please install " + error.name)
 
 import numpy as np
+import os
+from typing import Optional, List
+def stats_barc(output_files: List[str], output_directory: Optional[str]=None):
+    if not output_directory:
+        output_directory = os.path.dirname(output_files[0])
 
-#output_directory=“/Users/josephb1/Barcode_Partitioning/test.cases/“
-def stats_barc(output_directory: str):
-    
-    os.chdir(output_directory)
-    all_files=os.listdir(output_directory)
-    file_names=list(filter(lambda x: re.search(r'fastq', x), all_files))
-    output_dirs=[output_directory + s for s in file_names]
+    file_names=[os.path.basename(file) for file in output_files]
 
     output_size = []
-    for i in range(len(output_dirs)):
-            counts = sum(1 for line in open(output_dirs[i]))
+    for i in range(len(output_files)):
+            counts = sum(1 for line in open(output_files[i]))
             output_size.append(counts) 
     divisor = 4
     outputs = [s/divisor for s in output_size]
@@ -33,5 +31,7 @@ def stats_barc(output_directory: str):
     plt.ylabel('number of reads')
     plt.title('dataset names')
     plt.show()
-    final_plot.savefig("demultiplexedResults.pdf", bbox_inches='tight')
 
+    if output_directory[-1] != '/':
+        output_directory += '/'
+    final_plot.savefig(output_directory + "demultiplexedResults.pdf", bbox_inches='tight')
