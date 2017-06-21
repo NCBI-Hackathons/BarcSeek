@@ -1,4 +1,5 @@
 # BarcSeek ![alt text](https://i.imgur.com/Bxh9lGc.png)
+*A General Barcode Partitioning Tool for Demultiplexing Genomic Sequencing Data*
 
 At BarcSeek, we believe all genomic barcoding schemes deserve to be analyzed. We developed this project to demultiplex a wide array of barcoding schemes and match them quickly and efficiently with their sequenced sample partners.
 
