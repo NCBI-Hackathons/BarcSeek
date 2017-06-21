@@ -151,6 +151,11 @@ def partition(
     return output_list
 
 
-def fpartition():
+def fpartition(
+        barcodes: Dict[str, List[str]],
+        filename: str,
+        reverse: Optional[str]=None,
+        error_rate: Optional[int]=None
+) -> None:
     sleep(5)
     print("Slept")
