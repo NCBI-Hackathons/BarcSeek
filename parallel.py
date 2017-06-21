@@ -14,6 +14,7 @@ import json
 import sys
 import subprocess
 import shlex
+import re
 
 import itertools
 from typing import Optional
@@ -21,10 +22,11 @@ from typing import Optional
 logging.basicConfig(filename='parallel.log', filemode="w", level=logging.DEBUG, format='%(asctime)s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 logger = logging.getLogger('barcode-logger')
-
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
+
+split_file_pattern = 'x12345_filename.fastq'
 
 dask.set_options(get=dask.multiprocessing.get)
 def _fake_partition_(filename: str):
@@ -87,14 +89,22 @@ def _get_chunk_size_(lines:int, chunks:int) -> int:
     return chunk_size
 
 
+def _get_dir_fn_(fastq_file: str) -> tuple:
+    if fastq_file:
+        (*paths, fn) = os.path.split(fastq_file)
+        return paths[0], fn
+    else:
+        return "", ""
+
+
 ''' creates files of the format x12345_filename.fastq '''
 def _split_fastq_(fastq_fn: str, num_chunks: int):
-    (dir, fn) = _get_dir_fn_(fastq_fn)
+    (d, fn) = _get_dir_fn_(fastq_fn)
     lines = _get_line_count_(fastq_fn)
     chunk_size = _get_chunk_size_(lines, num_chunks)
     logger.debug("chunk file num lines=%i" % chunk_size)
-    logger.debug("changing dir to: %s" % dir)
-    os.chdir(dir)
+    logger.debug("changing dir to: %s" % d)
+    os.chdir(d)
     cmd = "split -d -a 5 -l %i --additional-suffix=_%s %s" % (chunk_size, fn, fn)
 
     logger.debug("running command %s" % cmd)
@@ -102,46 +112,79 @@ def _split_fastq_(fastq_fn: str, num_chunks: int):
     return rc, out
 
 
-def _get_dir_fn_(fastq_file:str) -> tuple:
-    if fastq_file:
-        (*paths, fn) = os.path.split(fastq_file)
-        return paths[0], fn
-    else:
-        return "",""
-
-
-def _split_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional(str) = None):
+''' creates files of the format x12345_filename.fastq '''
+def _split_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional[str] = None):
     (rc, out) = _split_fastq_(forward_fastq, num_chunks)
-    if not rc == 0:
+    if rc:
         raise Exception("Error splitting files, error code %s" % rc)
 
     if reverse_fastq:
         (rc, out) = _split_fastq_(reverse_fastq, num_chunks)
-        if not rc == 0:
+        if rc:
             raise Exception("Error splitting files, error code %s" % rc)
 
 
-def _fetch_chunk_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional(str) = None) -> tuple:
-    (dir, fn) = _get_dir_fn_(forward_fastq)
+''' files in the format x12345_filename.fastq '''
+def _fetch_chunk_files_(num_chunks: int, forward_fastq: str, reverse_fastq: Optional[str] = None) -> dict:
+    (d, f_fn) = _get_dir_fn_(forward_fastq)
 
-    if reverse_fastq:
-        (_, rn) = _get_dir_fn_(reverse_fastq)
-        _split_files_(num_chunks, forward_fastq, reverse_fastq)
+    logger.debug("fetching chunk files, changing dir to %s" % d)
+    os.chdir(d)
+
+    master_dict = {}
+
+    _split_files_(num_chunks, forward_fastq, reverse_fastq)
+    logger.debug("fetching new file names")
+
+    f_regex = 'x*_' + f_fn
+    logger.debug("looking for files of pattern %s" % f_regex)
+    f_files = glob.glob(f_regex)
+
+    logger.debug("found %i files" % len(f_files))
+
+    f_dict = {re.search('x(\d+)', fn).group(0): fn for fn in f_files}
+
+    prefixes = list(f_dict.keys())
+    prefixes.sort()
+    logger.debug("num prefixes: %i" % len(prefixes))
+
+    if (reverse_fastq):
+        (d, r_fn) = _get_dir_fn_(reverse_fastq)
+        r_files = glob.glob('x*_' + r_fn)
+        r_files.sort()
+        r_dict = {re.search('x(\d+)', fn).group(0): fn for fn in r_files}
+        for p in prefixes:
+            f_file = f_dict[p]
+            r_file = r_dict[p]
+            logger.debug("found file %s %s for prefix %s" % (f_file, r_file, p))
+            master_dict[p] = {'f_input': f_file, 'r_input': r_file}
+    else:
+        for p in prefixes:
+            f_file = f_dict[p]
+            logger.debug("found file %s for prefix %s" % (f_file, p))
+
+            master_dict[p] = {'f_input': f_file, 'r_input': ''}
+
+    return master_dict
 
 
-def _sanity_check_directory_(forward_fastq:str, reverse_fastq: Optional(str) = None):
+def _sanity_check_directory_(forward_fastq:str, reverse_fastq: Optional[str] = None):
     (fdir, ffn) = _get_dir_fn_(forward_fastq)
     (rdir, rfn) = _get_dir_fn_(reverse_fastq)
     if rdir and not (fdir == rdir):
         raise Exception("forward fastq and reverse fastq must be in same directory: %s   %s" % forward_fastq,
                         reverse_fastq)
 
+def _dump_dict_(master_dict:dict):
+    [logger.debug(k + ":" + master_dict[k]) for k in master_dict.keys()]
 
-def parallelize(barcodes:tuple, samples:dict, num_chunks:int, forward_fastq:str,
-                reverse_fastq:Optional(str) = None):
+
+def parallelize(barcodes:dict, num_lines:int, forward_fastq:str, reverse_fastq:Optional[str] = None):
     orig_home = os.getcwd()
+
     _sanity_check_directory_(forward_fastq, reverse_fastq)
-    (forward_files, reverse_files) = _fetch_chunk_files_(num_chunks, forward_fastq, reverse_fastq)
+    master_dict  = _fetch_chunk_files_(num_lines, forward_fastq, reverse_fastq)
+    _dump_dict_(master_dict)
 
 
 
@@ -166,20 +209,15 @@ def main():
     try:
         barcodes = ()
         samples = ()
-        num_chunks = 400
+        num_lines = 10000
         forward_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/data/test01_f.fastq"
-        reverse_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/data/test01_f.fastq"
+        reverse_fastq = "/home/jcabraham/python-projects/Barcode_Partitioning/data/test01_r.fastq"
         parallelize(
             barcodes=barcodes,
-            samples=samples,
-            num_chunks=num_chunks,
+            num_chunks=num_lines,
             forward_fastq=forward_fastq,
             reverse_fastq=reverse_fastq
         )
-
-
-        #for i in so:
-        #    print(i)
 
     except:
         print(sys.exc_info())
