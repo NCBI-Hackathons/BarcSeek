@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+"""Parition a FASTQ file (or paired FASTQ files) based on barcodes"""
+
 import sys
 import argparse
 import csv
@@ -7,21 +10,33 @@ from collections import Counter
 import json
 import regex
 
+from partition import IUPAC_CODES
+
 
 if sys.version_info.major is not 3 and sys.version_info.minor < 5:
     sys.exit("Please use Python 3.5 or higher")
 
 class InputError(Exception):
-    '''
-    An error occurred because of your input
-    '''
+    '''An error occurred because of your input'''
     def __init__(self, message):
+        super().__init__(self)
         self.message = message
-    
+
+
 #   A function to create an argument parser
 def _set_args():
     parser = argparse.ArgumentParser( # type: argparse.ArgumentParser
-        description='Pull DNA barcodes from FASTQ files.',
+        description='''
+                     -----------------------------------
+                    < Pull DNA barcodes from FASTQ files >
+                     -----------------------------------
+                     /
+     \ ______/ V`-, /
+      }        /~~
+     /_)^ --,r'
+    |b      |b
+     ''',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=True
     )
     parser.add_argument(
@@ -62,7 +77,7 @@ def _set_args():
         metavar='BARCODES',
         help="Provide a filepath for the Barcodes CSV file.",
         required=True
-    )    
+    )
     parser.add_argument(
         '-e',
         '--error',
@@ -72,23 +87,13 @@ def _set_args():
         metavar='ERROR',
         help="This is how many mismatches in the barcode we allowed before rejecting. Default is 2."
     )
-    parser.add_argument("--verbose", 
+    parser.add_argument(
+        "--verbose",
         help="increase output verbosity",
-        action="store_true")
+        action="store_true"
+    )
     return parser
 
-IUPAC_CODES = {
-        'R': 'AG',
-        'Y': 'CT',
-        'S': 'GC',
-        'W': 'AT',
-        'K': 'GT',
-        'M': 'AC',
-        'B': 'CGT',
-        'D': 'AGT',
-        'H': 'ACT',
-        'V': 'ACG'
-    }
 
 def expand_iupac(barcode):
     '''
@@ -113,7 +118,7 @@ def unpack(collection):
             result.extend(unpack(collection=item))
         else:
             result.append(item)
-    return result    
+    return result
 
 
 def barcode_check(barcode_dict):
@@ -123,13 +128,13 @@ def barcode_check(barcode_dict):
     '''
     barcodes =  list(chain.from_iterable(barcode_dict.values()))
     expanded_barcodes = unpack([expand_iupac(bc) for bc in barcodes])
-    multiplicate_barcodes = dict(filter(lambda item: item[1]>1 , Counter(['ACGT','ACGT','ACCT']).items()))
+    multiplicate_barcodes = dict(filter(lambda item: item[1]>1 , Counter(expanded_barcodes).items()))
     return len(multiplicate_barcodes)>0, multiplicate_barcodes
 
 
 def extract_barcodes(sample_sheet, barcode_csv):
     '''
-    Returns a dictionary, Keys are the sample_names, 
+    Returns a dictionary, Keys are the sample_names,
     '''
     barcode_file = list(csv.reader(open(barcode_csv), delimiter=','))
     ss_file = list(csv.reader(open(sample_sheet), delimiter='\t'))[1:]
