@@ -101,13 +101,14 @@ The command line interface also provides some sanity checks, including checking 
 ## Resources
 - Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
 
-## To Do
+## Future Directions
 - Statistics and Quality Control. Further develop and add in average data quality.
 - Uniform exception handling among all python files.
 - Analyze information in UMIs. Currently this information is ignored.
 - Managing whitespace considerations in CLI file & making code compatible with Python style guide. [(link)](http://legacy.python.org/dev/peps/pep-0008/)
 - Add wiki-style section to provide use cases using various FASTQ files & barcoding strategies. [(link)](https://github.com/mojaveazure/angsd-wrapper/wiki)
 - handle compressed / zipped FASTQ files. Currently our program will only process raw / unzipped FASTQ files.
+- Add the ability to allow analysis on differences between forward and reverse reads (barcode1 and barcode2)
 
 ## Credits
 Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1) comprised of a couple computational biologists, a microbiologist, and a pathologist.
