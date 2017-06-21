@@ -17,7 +17,22 @@ except ImportError as error:
 
 class Read(object):
 
+    """A read from a FASTQ
+    This object represents read information from a FASTQ file (or paired FASTQ files)
+    It contains the read ID, sequence, and quality scores, as well as optional
+    reverse sequence and reverse quality scores for paired-end data
+    """
+
     def __init__(self, read_id: str, seq: str, qual: str, rev: Optional[str]=None, rev_qual: Optional[str]=None) -> None:
+        """
+    read_id [str]:          The read ID
+    seq [str]:              The forward or only sequence
+    qual [str]              The quality scores for 'seq'
+    rev [str]=None          Optional reverse sequence
+    rev_qual [str]=None     Optional quality scores for 'rev'
+
+    If 'rev' is provided, 'rev_qual' must also be provided
+    """
         self._id = read_id
         self._seq = seq
         self._qual = qual
@@ -80,13 +95,20 @@ class Read(object):
         return self._fastq(reverse=True)
 
     def add_reverse(self, seq: str, qual: str) -> None:
-        """Add a reverse read and quality score"""
+        """Add a reverse read and quality score
+        seq [str]:  Reverse sequence for this read
+        qual [str]: Reverse quality score for this read
+        """
         self._rseq = seq
         self._rqual = qual
         self._validate()
 
     def trim(self, start: int, end: Optional[int]=None, reverse: bool=False) -> None:
-        """Trim some sequence"""
+        """Trim some sequence from the read (0-based)
+        start [int]:            Where do we start trimming?
+        end [int]:              Where do we end trimming?
+        reverse [bool]=False    Are we trimming from the reverse read?
+        """
         if end and start > end:
             raise ValueError("'start' cannot be greater than 'end'")
         if reverse:
@@ -99,6 +121,7 @@ class Read(object):
             self._qual = self._qual[:start] + (self._qual[end:] if end else '')
 
     read_id = property(fget=__repr__, doc='The read ID')
+    name = property(fget=__repr__, doc='The read ID')
     forward = property(fget=_forward, doc='Forward sequence')
     reverse = property(fget=_reverse, doc='Reverse sequence')
     paired = property(fget=_is_paired, doc='Is this read paired?')
