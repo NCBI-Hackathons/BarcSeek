@@ -100,7 +100,6 @@ The command line interface also provides some sanity checks, including checking 
 
 ## Resources
 - Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
-- icons8.com for our icon: [link](http://icons8.com)
 
 ## To Do
 - Statistics and Quality Control. Further develop and add in average data quality.
@@ -112,3 +111,5 @@ The command line interface also provides some sanity checks, including checking 
 
 ## Credits
 Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1) comprised of a couple computational biologists, a microbiologist, and a pathologist.
+
+Another credit to icons8.com for our dog icon: [link](http://icons8.com) .
