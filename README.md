@@ -4,7 +4,7 @@ BarcSeek in one sentence: A **General** Barcode Partitioning Tool for Demultiple
 At BarcSeek, we believe all genomic barcoding schemes deserve to be analyzed. We developed this project to demultiplex a wide array of barcoding schemes and match them quickly and efficiently with their sequenced sample partners.
 
 ## Introduction
-Wherever there is massive multiplexing in genomic sequencing data, a large amount of barcode data is generated as well. This barcode data is not necessarily encoded using the same schema (e.g. ChIP, single cell, RNAseq data). Our goal through this project was to take multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assignng to the proper read, from many different FASTQ encoding schemes. 
+Wherever there is massive multiplexing in genomic sequencing data, a large amount of barcode data is generated as well. This barcode data is not necessarily encoded using the same schema (e.g. ChIP, single cell, RNAseq data). Our goal through this project was to take multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assigning to the proper read, from many different FASTQ encoding schemes. 
 
 This tool is efficiently implemented like many other demultiplexers, but it is distinguished from other demultiplexers by allowing and seemlessly handling inputs from many different sources and different barcode strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
