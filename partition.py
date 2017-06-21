@@ -34,7 +34,10 @@ IUPAC_CODES = {
 }
 
 def fix_iupac(barcode: str) -> str:
-    """Remove IUPAC codes from the barcode sequence, 'N's will remain"""
+    """Remove IUPAC codes from the barcode sequence, 'N's will remain
+    barcode [str]   The barcode sequence to remove IUPAC codes from
+                        These codes will be replaced with regex-style options
+    """
     new_barcode = barcode
     for code, sub in IUPAC_CODES.items(): # type: str, str
         new_barcode = new_barcode.replace(code, '[%s]' % sub) # type: str
@@ -42,7 +45,9 @@ def fix_iupac(barcode: str) -> str:
 
 
 def barcode_to_regex(barcode: str, error_rate: Optional[int]=None):
-    """Convert a barcode string to a regex pattern"""
+    """Convert a barcode string to a regex pattern
+    barcode [str]           The barcode string to turn into a regex
+    error_rate [int]=None   The error rate"""
     pattern = '' # type: str
     umi = regex.findall(r'(N+)', barcode, regex.IGNORECASE) # type: List[str]
     umi_lengths = tuple(map(len, umi)) # type: Tuple[int]
@@ -66,9 +71,10 @@ def barcode_to_regex(barcode: str, error_rate: Optional[int]=None):
 
 def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], error_rate: Optional[int]=None) -> Optional[fastq.Read]:
     """Match a read to a specific pair of barcodes
-    'read' is an object of class Read
-    'barcodes' is either a tuple or list of one or two barcode sequences
-    'error_rate' is the error rate"""
+    read [fastq.Read]                           A read object to try matching with this set of barcodes
+    barcodes [Collection[str, Optional[str]]]:  A tuple or list of one or two barcode sequences
+    error_rate [int]=None                       The error rate
+    """
     barcodes = filter(None, barcodes) # type: filter
     regexes = tuple(map(lambda tup: barcode_to_regex(*tup), zip(barcodes, itertools.repeat(error_rate)))) # type: Tuple
     matches = list() # type: List
@@ -93,23 +99,43 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
     return trimmed
 
 
-def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[str]=None, error_rate: Optional[int]=None):
-    """stuff"""
+def partition(
+        barcodes: Dict[str, List[str]],
+        filename: str,
+        reverse: Optional[str]=None,
+        error_rate: Optional[int]=None
+) -> List[Tuple[str, Optional[str]]]:
+    """Partition a FASTQ file into component barcodes
+    barcodes [Dict[str, List[str]]]:    A dictionary where the key is the sample ID and
+                                            the value is a list or tuple of one or two
+                                            barcode sequences
+    filename [str]                      Forward or single FASTQ filename
+    reverse [str]=None                  Optional reverse FASTQ filename
+    error_rate [int]=None               The error rate
+    """
     try:
         reads = fastq.read_fastq(fastq=filename, pair=reverse) # type: Tuple[fastq.Read]
     except FileNotFoundError as error:
         sys.exit("Cannot find " + error.filename)
     output_directory = os.path.dirname(filename) # type: str
+    output_list = list() # type: List[Tuple[str, Optional[str]]]
     for sample_name, barcode_list in barcodes.items(): # type: str, List[str]
-        output_name = output_directory + '/' + sample_name + '_fwd.fastq'
+        #   Create output names for forward and reverse files
+        output_name = output_directory + '/' + sample_name + '_fwd.fastq' # type: str
+        if reverse:
+            reverse_name = output_name.replace('fwd', 'rev')
+            rfile = open(reverse_name, 'w')
+        else:
+            reverse_name = None
+        output_list.append((output_name, reverse_name))
+        #   Zip the arguments together for the map
         args = zip(
             reads,
             itertools.repeat(barcode_list),
             itertools.repeat(error_rate)
         )
+        #   Run the partitioning for each read for this barcode
         results = map(lambda tup: match_barcode(*tup), args)
-        if reverse:
-            rfile = open(output_name.replace('fwd', 'rev'), 'w')
         with open(output_name, 'w') as ofile:
             for read in filter(None, results): # type: fastq.Read
                 ofile.write(read.fastq)
@@ -121,3 +147,4 @@ def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[s
                     rfile.flush()
         if reverse:
             rfile.close()
+    return output_list
