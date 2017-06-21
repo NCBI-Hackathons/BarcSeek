@@ -30,7 +30,7 @@ In the sample genomic data generation, the quality scores were sampled from phre
 
 The contents of these files can be found [here](/test.cases).
 
-### Command Line Interface: The command line interface takes inputs from the user to pass through the program. 
+## User Interface: The command line interface takes inputs from the user to pass through the program. 
 The inputs required are: 
 - filepath for the forward read FASTQ file (-f FORWARD FASTQ, required)
 - filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional)
@@ -100,10 +100,9 @@ The command line interface also provides some sanity checks, including checking 
 
 ## Resources
 - Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
-- Markdown Language / Cheat Sheet: [link](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 - icons8.com for our icon: [link](http://icons8.com)
 
-## Limitations (a.k.a. "Future directions")
+## To Do
 - Statistics and Quality Control. Further develop and add in average data quality.
 - Uniform exception handling among all python files.
 - Analyze information in UMIs. Currently this information is ignored.
@@ -113,5 +112,3 @@ The command line interface also provides some sanity checks, including checking 
 
 ## Credits
 Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1) comprised of a couple computational biologists, a microbiologist, and a pathologist.
-
-# ![alt text](https://i.imgur.com/wBCpsf8.png) 
