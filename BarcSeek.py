@@ -110,7 +110,7 @@ def expand_iupac(barcode):
     else:
         pos = regex.search(r'[%s]' % ''.join(IUPAC_CODES.keys()), barcode).start()
         code = barcode[pos]
-        return [expand_iupac(barcode.replace(code, i,1)) for i in IUPAC_CODES[code]]
+        return (expand_iupac(barcode.replace(code, i, 1)) for i in IUPAC_CODES[code])
 
 
 def unpack(collection):
@@ -133,9 +133,9 @@ def barcode_check(barcode_dict):
     Does not check for ambiguity with regards to UMIs, i.e. strings of 'N'. So 'ACGN' and 'ACGT' are recognized as different 
     even though they can both match 'ACGT'.
     '''
-    barcodes = list(chain.from_iterable(barcode_dict.values()))
-    expanded_barcodes = unpack([expand_iupac(bc) for bc in barcodes])
-    multiplicate_barcodes = dict(filter(lambda item: item[1]>1 , Counter(expanded_barcodes).items()))
+    barcodes = chain.from_iterable(barcode_dict.values())
+    expanded_barcodes = unpack(expand_iupac(bc) for bc in barcodes)
+    multiplicate_barcodes = dict(filter(lambda item: item[1] > 1 , Counter(expanded_barcodes).items()))
     return multiplicate_barcodes
 
 
@@ -143,6 +143,7 @@ def extract_barcodes(sample_sheet, barcode_csv):
     '''
     Returns a dictionary, Keys are the sample_names, values are the barcodes.
     '''
+<<<<<<< HEAD
     with open(sample_sheet) as ss_reader, open(barcode_csv) as barcode_reader:
         ss_file = islice(csv.reader(ss_reader, delimiter='\t'),1,None)
         barcode_file = csv.reader(barcode_reader, delimiter=',')
@@ -159,13 +160,33 @@ def extract_barcodes(sample_sheet, barcode_csv):
         if filtered_barcodes:
             raise InputError('One of your samples in your sample_sheet.tab has no barcodes associated with itself.')
         return ss_dict
+=======
+    barcode_file = csv.reader(open(barcode_csv), delimiter=',')
+    ss_file = list(csv.reader(open(sample_sheet), delimiter='\t'))[1:]
+    csv_dict = {int(line[0]): line[1] for line in barcode_file}
+    ss_dict = {samplename: [] for samplename in islice(chain.from_iterable(ss_file), 2, None, 3)}
+    for line in ss_file:
+        barcode1, barcode2, samplename = line[0], line[1], line[2]
+        if barcode1:
+            ss_dict[samplename].append(csv_dict[int(barcode1)])
+        if barcode2:
+            ss_dict[samplename].append(csv_dict[int(barcode2)])
+    filtered_barcodes = list(filter(lambda sample: not(sample[1]), ss_dict.items()))
+    if filtered_barcodes:
+        raise InputError('One of your samples in your sample_sheet.tab has no barcodes associated with itself.')
+    return ss_dict
+>>>>>>> 01ba0970775d05438c239fea8d1ec3459997c659
 
 
 def main(args):
     '''Run the program'''
+<<<<<<< HEAD
     if args['numlines']%4 != 0:
         raise InputError('-l  must be divisible by four'+str(args['numlines']))
     barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
+=======
+    barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'], args['barcodes']))
+>>>>>>> 01ba0970775d05438c239fea8d1ec3459997c659
     if barcode_ambiguity_dict:
         raise InputError("There are ambiguous barcodes \n" + str(json.dumps(barcode_ambiguity_dict, indent=2)))
     #call the parallel layer which does the work:
