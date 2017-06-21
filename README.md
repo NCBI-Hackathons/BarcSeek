@@ -70,8 +70,7 @@ optional arguments:
   --verbose             increase output verbosity
 ```
 
-The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html) .
-![alt text](http://i.imgur.com/5m1ODne.png)
+The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html).
 
 ### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
