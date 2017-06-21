@@ -1,9 +1,9 @@
 # BarcSeek ![alt text](https://i.imgur.com/Bxh9lGc.png)
 
-A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarcSeek.
+At BarcSeek, we believe all genomic barcoding schemes deserve to be analyzed. We developed this project to demultiplex a wide array of barcoding schemes and match them quickly and efficiently with their sequenced sample partners.
 
 ## Introduction
-Wherever there is massive multiplexing in genomic sequencing data, a large amount of barcode data is generated as well. Our goal through this project was to take this multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assignng to the proper read, from many different FASTQ encoding schemes. 
+Wherever there is massive multiplexing in genomic sequencing data, a large amount of barcode data is generated as well. This barcode data is not necessarily encoded using the same schema (e.g. ChIP, single cell, RNAseq data). Our goal through this project was to take multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assignng to the proper read, from many different FASTQ encoding schemes. 
 
 This tool is efficiently implemented like many other demultiplexers, but it is distinguished from other demultiplexers by allowing and seemlessly handling inputs from many different sources and different barcode strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
@@ -89,25 +89,28 @@ The command line interface also provides some sanity checks, including checking 
 ### Statistics and Quality Control: This counts number of reads in the output.
 
 ## Sample Input Files
-- Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
-- Sample Barcode.csv: [link](barcodes_csv.txt)
-- Sample sample_sheet.tab: [link](Sample_sheet.txt)
+- Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt). This file must be unzipped prior to analysis.
+- Sample Barcode.csv: [link](barcodes_csv.txt). This file is maintained by the user.
+- Sample sample_sheet.tab: [link](Sample_sheet.txt). This file requires a header.
 
 ## Software Dependencies
 - Python 3.5 [link](https://www.python.org/downloads/release/python-350/)
 - DASK: [link](http://dask.pydata.org/en/latest/)
 - Regex: [link](https://pypi.python.org/pypi/regex/)
+- NumPy [link](http://www.numpy.org)
+- Matplotlib.pyplot [link](http://matplotlib.org)
 
 ## Resources
 - Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
 
-## To Do
+## Future Directions
 - Statistics and Quality Control. Further develop and add in average data quality.
 - Uniform exception handling among all python files.
 - Analyze information in UMIs. Currently this information is ignored.
 - Managing whitespace considerations in CLI file & making code compatible with Python style guide. [(link)](http://legacy.python.org/dev/peps/pep-0008/)
 - Add wiki-style section to provide use cases using various FASTQ files & barcoding strategies. [(link)](https://github.com/mojaveazure/angsd-wrapper/wiki)
 - handle compressed / zipped FASTQ files. Currently our program will only process raw / unzipped FASTQ files.
+- Add the ability to allow analysis on differences between forward and reverse reads (barcode1 and barcode2)
 
 ## Credits
 Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1) comprised of a couple computational biologists, a microbiologist, and a pathologist.
