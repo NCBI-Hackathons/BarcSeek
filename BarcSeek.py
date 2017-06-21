@@ -126,10 +126,10 @@ def barcode_check(barcode_dict):
     Checks whether or not there are barcodes in use that are ambiguous and could thus recognize the same sequence.
     For example the barcodes 'AY' and 'AW' both recognize 'AT'
     '''
-    barcodes =  list(chain.from_iterable(barcode_dict.values()))
+    barcodes = list(chain.from_iterable(barcode_dict.values()))
     expanded_barcodes = unpack([expand_iupac(bc) for bc in barcodes])
     multiplicate_barcodes = dict(filter(lambda item: item[1]>1 , Counter(expanded_barcodes).items()))
-    return len(multiplicate_barcodes)>0, multiplicate_barcodes
+    return multiplicate_barcodes
 
 
 def extract_barcodes(sample_sheet, barcode_csv):
@@ -144,24 +144,27 @@ def extract_barcodes(sample_sheet, barcode_csv):
     ss_dict = {samplename:[] for samplename in islice(chain.from_iterable(ss_file),2,None,3)}
     for line in ss_file:
         barcode1, barcode2, samplename = line[0], line[1], line[2]
-        if barcode1 != '':
+        if barcode1:
             ss_dict[samplename].append(csv_dict[int(barcode1)])
-        if barcode2 != '':
+        if barcode2:
             ss_dict[samplename].append(csv_dict[int(barcode2)])
-    if len(list(filter(lambda sample: not(sample[1]), ss_dict.items()))) > 0:
+    filtered_barcodes = list(filter(lambda sample: not(sample[1]), ss_dict.items()))
+    if filtered_barcodes:
         raise InputError('One of your samples in your sample_sheet.tab has no barcodes associated with itself.')
     return ss_dict
 
+
 def main(args):
-    barcodes_ambiguous, barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
-    if barcodes_ambiguous:
+    '''Run the program'''
+    barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
+    if barcode_ambiguity_dict:
         raise InputError("There are ambiguous barcodes \n" + str(json.dumps(barcode_ambiguity_dict, indent=2)))
     #call the parallel layer which does the work:
+
 
 if __name__ == '__main__':
     PARSER = _set_args() # type: argparse.ArgumentParser
     if not sys.argv[1:]:
         sys.exit(PARSER.print_help())
-    print(type(PARSER))
     ARGS = {key: value for key, value in vars(PARSER.parse_args()).items() if value is not None} # type: Dict[str, Any]
     main(ARGS)
