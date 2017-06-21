@@ -8,8 +8,16 @@ Wherever there is massive multiplexing in genomic sequencing data, a large amoun
 
 This tool is efficiently implemented like many other demultiplexers, but it is distinguished from other demultiplexers by allowing and seemlessly handling inputs from many different sources and different barcode strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
-## Who should use this module?
+## Who should use this project?
 Someone who is looking for a genomic data dempultiplexer that can handle many different types of barcoding schemes.
+
+This pipeline can be used to demultiplex:
+- Single Cell
+- RNAseq
+- ChIPseq
+- CLIP-Seq
+- Small RNAseq
+and other sequencing data sets. It can be used on single cell sequencing data as well.
 
 ## Project Architecture
 ### Graphical Pipeline Overview
