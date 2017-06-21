@@ -93,23 +93,36 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
     return trimmed
 
 
-def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[str]=None, error_rate: Optional[int]=None):
+def partition(
+        barcodes: Dict[str, List[str]],
+        filename: str,
+        reverse: Optional[str]=None,
+        error_rate: Optional[int]=None
+) -> List[Tuple[str, Optional[str]]]:
     """Partition a FASTQ file into component barcodes"""
     try:
         reads = fastq.read_fastq(fastq=filename, pair=reverse) # type: Tuple[fastq.Read]
     except FileNotFoundError as error:
         sys.exit("Cannot find " + error.filename)
     output_directory = os.path.dirname(filename) # type: str
+    output_list = list() # type: List[Tuple[str, Optional[str]]]
     for sample_name, barcode_list in barcodes.items(): # type: str, List[str]
-        output_name = output_directory + '/' + sample_name + '_fwd.fastq'
+        #   Create output names for forward and reverse files
+        output_name = output_directory + '/' + sample_name + '_fwd.fastq' # type: str
+        if reverse:
+            reverse_name = output_name.replace('fwd', 'rev')
+            rfile = open(reverse_name, 'w')
+        else:
+            reverse_name = None
+        output_list.append((output_name, reverse_name))
+        #   Zip the arguments together for the map
         args = zip(
             reads,
             itertools.repeat(barcode_list),
             itertools.repeat(error_rate)
         )
+        #   Run the partitioning for each read for this barcode
         results = map(lambda tup: match_barcode(*tup), args)
-        if reverse:
-            rfile = open(output_name.replace('fwd', 'rev'), 'w')
         with open(output_name, 'w') as ofile:
             for read in filter(None, results): # type: fastq.Read
                 ofile.write(read.fastq)
@@ -121,3 +134,4 @@ def partition(barcodes: Dict[str, List[str]], filename: str, reverse: Optional[s
                     rfile.flush()
         if reverse:
             rfile.close()
+    return output_list
