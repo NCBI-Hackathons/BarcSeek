@@ -1,5 +1,8 @@
 #######
 ####### get some stats and some plots 
+####### takes the output directory as sole input
+####### outputs two files: 1. a .txt file with ids and associated demultiplexed reads and 2. pdf file with barplot of demultiplexed datasets
+
 args = commandArgs(trailingOnly = T)
 
 if (length(args) != 1){
