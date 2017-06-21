@@ -26,7 +26,7 @@ class InputError(Exception):
 #   A function to create an argument parser
 def _set_args():
     parser = argparse.ArgumentParser( # type: argparse.ArgumentParser
-        description='''
+        description=r'''
                      -----------------------------------
                     < Pull DNA barcodes from FASTQ files >
                      -----------------------------------
