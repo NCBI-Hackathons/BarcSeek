@@ -9,6 +9,7 @@ if sys.version_info.major is not 3 and sys.version_info.minor < 5:
 
 import os
 import itertools
+from time import sleep
 from copy import deepcopy
 from typing import Optional, Union, Tuple, List, Dict
 
@@ -148,3 +149,8 @@ def partition(
         if reverse:
             rfile.close()
     return output_list
+
+
+def fpartition():
+    sleep(5)
+    print("Slept")
