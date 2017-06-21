@@ -81,6 +81,10 @@ def match_barcode(read: fastq.Read, barcodes: Union[Tuple[str], List[str]], erro
     matches = list() # type: List
     if len(regexes) == 1:
         matches.append(regexes[0].search(read.forward))
+        try:
+            matches.append(regexes[0].search(read.reverse))
+        except TypeError:
+            pass
     elif len(regexes) == 2:
         matches.append(regexes[0].search(read.forward))
         matches.append(regexes[1].search(read.reverse))
