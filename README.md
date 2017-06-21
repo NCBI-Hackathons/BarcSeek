@@ -3,13 +3,13 @@
 A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarcSeek. Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1).
 
 ## Introduction
-Wherever there is massive multiplexing in genomic sequencing data, a massive amount of barcode data is generated as well. Our goal through this project was to take this multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assignng to the proper read. We aimed to sort the transcripts into individual samples using a python-based, parallel architecture pipeline.
+Wherever there is massive multiplexing in genomic sequencing data, a large amount of barcode data is generated as well. Our goal through this project was to take this multiplexed genomic data and to label each transcript uniquely by partitioning the barcode data and assignng to the proper read. We aimed to sort the transcripts into individual samples using a python-based, parallel-architecture pipeline.
 
-We also aimed to make this project interface with many different barcoding strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
+Another goal of this project was to make this project interface with many different barcoding strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
 The architecture for this project was conceptualized as "the manager-worker relationship" where the manager divides up the work to be done in an efficient way, the workers do the work, then the workers return the work to the manager to assemble and prepare the information for presentation back to the user.
 
-More technically, once we have taken in the data and performed the proper validation via the command line interface (CLI), the program takes a parallel-data-processing approach  where the input genomic data is divided up among many different partitioners, taking advantage of the DASK parallel computing library for data analytics to divide the data into many files, internal to the program. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
+More technically, once we have taken in the data and performed the proper validation via the command line interface (CLI.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
 
 ## Project Architecture
 ### Graphical Pipeline Overview
@@ -63,6 +63,7 @@ optional arguments:
 ```
 
 The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html) .
+![alt text](http://i.imgur.com/5m1ODne.png)
 
 ### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
@@ -85,15 +86,14 @@ The command line interface also provides some sanity checks, including checking 
 ## Resources
 - Introduction to Sequencing: [link](https://www.illumina.com/content/dam/illumina-marketing/documents/products/illumina_sequencing_introduction.pdf)
 - Markdown Language / Cheat Sheet: [link](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
-- 
+- icons8.com for our icon: [link](http://icons8.com)
 
-## Limitations
-
-
-## Future Directions
+## Limitations (a.k.a. "Future directions")
 - Statistics and Quality Control. Further develop and add in average data quality.
-- Uniform exception handling 
+- Uniform exception handling among all python files.
+- Analyze information in UMIs. Currently this information is ignored.
 - Managing whitespace considerations in CLI file & making code compatible with Python style guide. [(link)](http://legacy.python.org/dev/peps/pep-0008/)
 - Add wiki-style section to provide use cases using various FASTQ files & barcoding strategies. [(link)](https://github.com/mojaveazure/angsd-wrapper/wiki)
+- handle compressed / zipped FASTQ files. Currently our program will only process raw / unzipped FASTQ files.
 
 # ![alt text](https://i.imgur.com/wBCpsf8.png) 
