@@ -120,9 +120,11 @@ def partition(
         sys.exit("Cannot find " + error.filename)
     output_directory = os.path.dirname(filename) # type: str
     output_list = list() # type: List[Tuple[str, Optional[str]]]
+    basename = os.path.basename(filename)
     for sample_name, barcode_list in barcodes.items(): # type: str, List[str]
         #   Create output names for forward and reverse files
-        output_name = output_directory + '/' + sample_name + '_fwd.fastq' # type: str
+        # output_name = output_directory + '/' + sample_name + '_fwd.fastq' # type: str
+        output_name = output_directory + '/' + sample_name + '_fwd_' + basename # type: str
         if reverse:
             reverse_name = output_name.replace('fwd', 'rev') # type: str
             rfile = open(reverse_name, 'w') # type: _io.TextIOWrapper
