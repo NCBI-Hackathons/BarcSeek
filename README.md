@@ -2,7 +2,7 @@
 A NCBI Hackathon Project Generating a Pipeline for parallel Barcode Partitioning for general use, called BarSeek. Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York and Boston.
 
 ## Introduction
-Wherever there is massive multiplexing in genomic sequencing data, a massive amount of barcode data is generated. Our goal through this project was take this multiplexed data and to label each transcript uniquely by partitioning the barcode data. We aimed to sort the transcripts into individual samples using a python-based, parallel architecture pipeline.
+Wherever there is massive multiplexing in genomic sequencing data, a massive amount of barcode data is generated as well. Our goal through this project was to take this multiplexed data and to label each transcript uniquely by partitioning the barcode data. We aimed to sort the transcripts into individual samples using a python-based, parallel architecture pipeline.
 
 We also aimed to make this project interface with many different barcoding strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
