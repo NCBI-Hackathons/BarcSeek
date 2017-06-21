@@ -36,7 +36,7 @@ The inputs required are:
 - filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional)
 - filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required)
 - barcode.csv file (-b BARCODES, required)
-- error rate (-e ERROR RATE, required but defaults to 2).
+- error rate (-e ERROR RATE, required but defaults to 1).
 - number of lines to divide the FASTQ file into for one paritition to work on (-l NUMLINES, default is 40,000)
 
 The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html).
@@ -53,7 +53,14 @@ This section can be conceptualized as the worker. If passed, this section can ha
 ## Sample Input Files
 - Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt). This file must be unzipped prior to analysis.
 - Sample Barcode.csv: [link](barcodes_csv.txt). This file is maintained by the user.
+   CSV file.
+   Each line contains index,barcode
 - Sample sample_sheet.tab: [link](Sample_sheet.txt). This file requires a header.
+   Tab-separated file.
+   Three columns:barcode1 barcode2 sample_name
+   The barcodes are denoted by integers which reference the indexes from barcode.csv
+   If a line only contains one barcode, we assume it will be found in FORWARD FASTQ.
+   If a line contains two barcodes, we assume to find barcode1 in FORWARD FASTQ and barcode2 in REVERSE FASTQ.
 
 ## Software Dependencies
 - Python 3.5 [link](https://www.python.org/downloads/release/python-350/)
