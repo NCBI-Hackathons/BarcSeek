@@ -7,16 +7,16 @@ Wherever there is massive multiplexing in genomic sequencing data, a large amoun
 
 This tool is efficiently implemented like many other demultiplexers, but it is distinguished from other demultiplexers by allowing and seemlessly handling inputs from many different sources and different barcode strategies. We understand and have worked with many different barcode formats and we have aimed to allow our program to handle the various barcoding strategies (e.g. barcode-UMI-barcode, barcode-UMI, and handle forward & reverse reads, among others).
 
-The architecture for this project was conceptualized as "the manager-worker relationship" where the manager divides up the work to be done in an efficient way, the workers do the work, then the workers return the work to the manager to assemble and prepare the information for presentation back to the user.
-
-More technically, once we have taken in the data and performed the proper validation via the command line interface (BarcSeek.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
-
 ## Who should use this module?
-Someone who is looking to demultiplex genomic output data from many different machines which may use conventional or unconventional barcoding schemes.
+Someone who is looking for a genomic data dempultiplexer that can handle many different types of barcoding schemes.
 
 ## Project Architecture
 ### Graphical Pipeline Overview
-![alt text](http://i.imgur.com/PFWTlk6.png)
+![alt text](architecture.png)
+
+The architecture for this project was conceptualized as "the manager-worker relationship" where the manager divides up the work to be done in an efficient way, the workers do the work, then the workers return the work to the manager to assemble and prepare the information for presentation back to the user.
+
+More technically, once we have taken in the data and performed the proper validation via the command line interface (BarcSeek.py), parallel.py divides up the information into many files, taking advantage of the DASK parallel computing, data-analytics library. These files are then up among the workers. The partitioners use a regex to handle standard IUPAC degenerate nucleotide notations. The workers then return a number of parsed files back to the central processing script (the manager) to be assembled and returned to the user. 
 
 ### Test Case Approach: We developed sample test cases to test functionality of our code.
 We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
