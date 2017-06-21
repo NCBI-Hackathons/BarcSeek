@@ -39,50 +39,12 @@ The inputs required are:
 - error rate (-e ERROR RATE, required but defaults to 2).
 - number of lines to divide the FASTQ file into for one paritition to work on (-l NUMLINES, default is 40,000)
 
-```
-usage: BarcSeek.py [-h] -f FORWARD FASTQ [-r REVERSE FASTQ] -s SAMPLE SHEET -b
-                   BARCODES [-e ERROR] [-l NUMLINES]
-
-                     -----------------------------------
-                    < Pull DNA barcodes from FASTQ files >
-                     -----------------------------------
-                        _______ 
-                       /       \
-     \ ______/ V`-, < |  Barc!  |
-      }        /~~.    \_______/
-     /_)^ --,r'
-    |b      |b
-
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -f FORWARD FASTQ, --forward-fastq FORWARD FASTQ
-                        Provide a filepath for the Forward FASTQ file.
-                        [REQUIRED]
-  -r REVERSE FASTQ, --reverse-fastq REVERSE FASTQ
-                        Provide a filepath for the Reverse FASTQ file.
-                        [OPTIONAL]
-  -s SAMPLE SHEET, --sample-sheet SAMPLE SHEET
-                        Provide a filepath for the Sample Sheet file.
-                        [REQUIRED]
-  -b BARCODES, --barcodes BARCODES
-                        Provide a filepath for the Barcodes CSV file.
-                        [REQUIRED]
-  -e ERROR, --error ERROR
-                        This is how many mismatches in the barcode
-                        we allowed before rejecting.
-                        [OPTIONAL, DEFAULT=1]
-  -l NUMLINES, --numlines NUMLINES
-                        We internally split your input file(s) into
-                        many smaller files, after -l lines.
-                        [OPTIONAL, DEFAULT=40000]
-```
-
 The command line interface also provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes - [link] (http://www.bioinformatics.org/sms/iupac.html).
 
 ### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
-### Partitioning: The partitioning code takes in the divided data, in the form of different internal files, and paritions the barcode using regex. The files generated (work) from the parititioning code is then sent back to the parallelization script in the form of many internal files.
+### Partitioning: The partitioning code matches barcodes with reads, using the regex library.
+This section can be conceptualized as the worker. If passed, this section can handle ambiguous nucleotides (as given by the IUPAC standard, e.g. Y = C or T). It trims barcode sequences from the reads, then writes trimmed reads back to a FASTQ file(s) titled by barcode.
 
 ### Output: The parallelization code then re-assembles the files into the proper matched barcode-sample output for the user. The output is provided as one or two files (depending on forward and reverse reads) in the directory of the original FASTQ files.
 
