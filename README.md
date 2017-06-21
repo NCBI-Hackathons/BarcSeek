@@ -38,10 +38,11 @@ optional arguments:
 ```
 
 ## Project Architecture
-Pipeline Overview:
+### Graphical Pipeline Overview
 ![alt text](https://i.imgur.com/EPEYBDq.png)
 
-Test Case Approach: We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
+### Test Case Approach: We developed sample test cases to test functionality of our code.
+We simulated genomic data and stored it in hypothetical FASTQ files, one simulating a forward read (basic1.R1.fastq) and one simulating a reverse read (basic2.R1.fastq). Nucleotide lengths of the sample reads were:
 - Sample barcodes: 6 nucleotides
 - Degenerate sequences: 8 nucleotides
 - Sequence of interest was 50 nucleotides. 
@@ -52,15 +53,21 @@ In the sample genomic data generation, the quality scores were sampled from phre
 
 The contents of these files can be found [here](/test.cases).
 
-Command Line Interface: The command line interface takes inputs from the user to pass through the program. The inputs required are filepath for the forward read FASTQ file (-f FORWARD FASTQ, required), a filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional), a filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required), a barcode.csv file (-b BARCODES, required), and an error rate (-e ERROR RATE, required but defaults to 2).
+### Command Line Interface: The command line interface takes inputs from the user to pass through the program. 
+The inputs required are: 
+- filepath for the forward read FASTQ file (-f FORWARD FASTQ, required)
+- filepath to the reverse FASTQ if necessary (-r REVERSE FASTQ, optional)
+- filepath to the sample_sheet.tab file (-s SAMPLE SHEET, required)
+- barcode.csv file (-b BARCODES, required)
+- error rate (-e ERROR RATE, required but defaults to 2).
 
 The command line interface provides some sanity checks, including checking to ensure there are no ambiguous barcodes that could be misinterpreted and possibly assigned to the wrong sample read. The command line interface also uses regex to have the ability to check the barcode sequences to handle IUPAC degenerate nucleotide codes (e.g. [link] (http://www.bioinformatics.org/sms/iupac.html))
 
-Parallelization:
+### Parallelization: The parallelization code takes in the genomic data, divides it up, and passes the divided data to many workers.
 
-Partitioning:
+### Partitioning: The partitioning code takes in the divided data, in the form of different internal files, and paritions the barcode using regex.
 
-Output:
+### Output: The work from the parititioning code is then taken back in to the parallelization script in the form of many internal files, and re-assembled into the proper matched barcode-sample output files for the user.
 
 ## Sample Input Files
 - Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt)
