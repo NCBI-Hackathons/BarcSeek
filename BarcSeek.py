@@ -105,7 +105,7 @@ def expand_iupac(barcode):
     else:
         pos = regex.search(r'[%s]' % ''.join(IUPAC_CODES.keys()), barcode).start()
         code = barcode[pos]
-        return [expand_iupac(barcode.replace(code, i,1)) for i in IUPAC_CODES[code]]
+        return (expand_iupac(barcode.replace(code, i, 1)) for i in IUPAC_CODES[code])
 
 
 def unpack(collection):
@@ -126,9 +126,9 @@ def barcode_check(barcode_dict):
     Checks whether or not there are barcodes in use that are ambiguous and could thus recognize the same sequence.
     For example the barcodes 'AY' and 'AW' both recognize 'AT'
     '''
-    barcodes = list(chain.from_iterable(barcode_dict.values()))
-    expanded_barcodes = unpack([expand_iupac(bc) for bc in barcodes])
-    multiplicate_barcodes = dict(filter(lambda item: item[1]>1 , Counter(expanded_barcodes).items()))
+    barcodes = chain.from_iterable(barcode_dict.values())
+    expanded_barcodes = unpack(expand_iupac(bc) for bc in barcodes)
+    multiplicate_barcodes = dict(filter(lambda item: item[1] > 1 , Counter(expanded_barcodes).items()))
     return multiplicate_barcodes
 
 
@@ -138,9 +138,7 @@ def extract_barcodes(sample_sheet, barcode_csv):
     '''
     barcode_file = list(csv.reader(open(barcode_csv), delimiter=','))
     ss_file = list(csv.reader(open(sample_sheet), delimiter='\t'))[1:]
-
     csv_dict = {int(line[0]):line[1] for line in barcode_file}
-
     ss_dict = {samplename:[] for samplename in islice(chain.from_iterable(ss_file),2,None,3)}
     for line in ss_file:
         barcode1, barcode2, samplename = line[0], line[1], line[2]
@@ -156,7 +154,7 @@ def extract_barcodes(sample_sheet, barcode_csv):
 
 def main(args):
     '''Run the program'''
-    barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'],args['barcodes']))
+    barcode_ambiguity_dict = barcode_check(extract_barcodes(args['sample'], args['barcodes']))
     if barcode_ambiguity_dict:
         raise InputError("There are ambiguous barcodes \n" + str(json.dumps(barcode_ambiguity_dict, indent=2)))
     #call the parallel layer which does the work:
