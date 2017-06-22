@@ -100,9 +100,8 @@ The output is provided as one or two files (depending on forward and reverse rea
 ## Sample Input Files
 - Sample FASTQ File: [link](/test.cases/FASTQ_short_example.txt). This file must be unzipped prior to analysis.
 - Sample Barcode.csv: [link](barcodes_csv.txt). This file is maintained by the user.
-   CSV file.
-   
-   Each line contains index,barcode
+   CSV file.   
+   Each line contains index,barcode  
 - Sample sample_sheet.tab: [link](Sample_sheet.txt). This file requires a header.
    Tab-separated file.  
    Three columns:barcode1 barcode2 sample_name  
