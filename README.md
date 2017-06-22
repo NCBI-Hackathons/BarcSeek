@@ -104,12 +104,11 @@ The output is provided as one or two files (depending on forward and reverse rea
    
    Each line contains index,barcode
 - Sample sample_sheet.tab: [link](Sample_sheet.txt). This file requires a header.
-   Tab-separated file.
-   
----Three columns:barcode1 barcode2 sample_name
----The barcodes are denoted by integers which reference the indexes from barcode.csv
----If a line only contains one barcode, we assume it will be found in FORWARD FASTQ.
----If a line contains two barcodes, we assume to find barcode1 in FORWARD FASTQ and barcode2 in REVERSE FASTQ.
+   Tab-separated file.  
+   Three columns:barcode1 barcode2 sample_name  
+   The barcodes are denoted by integers which reference the indexes from barcode.csv  
+   If a line only contains one barcode, we assume it will be found in FORWARD FASTQ.  
+   If a line contains two barcodes, we assume to find barcode1 in FORWARD FASTQ and barcode2 in REVERSE FASTQ.  
 
 ## Software Dependencies
 - Python 3.5 [link](https://www.python.org/downloads/release/python-350/)
