@@ -132,3 +132,5 @@ The output is provided as one or two files (depending on forward and reverse rea
 Initial development took place at New York Genome Center, June 19-21, 2017 from a 5 person team from New York (4) and Boston (1) comprised of a couple computational biologists, a microbiologist, and a pathologist.
 
 Another credit to icons8.com for our dog icon: [link](http://icons8.com) .
+
+[manuscript](https://docs.google.com/document/d/1hFbCvAxzgxJ2ENEUZjBc_dSfRu0sDzI5YQ921FJJhow/mobilebasic)
